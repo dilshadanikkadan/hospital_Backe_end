@@ -6,6 +6,7 @@ import { SocketContext } from '../../store/redux/slices/SocketContext'
 import { useQuery } from '@tanstack/react-query'
 import { viewAppointment } from '../../services/api/userRoute'
 import AppointmentApproved from '../../components/user/NotificationPage/AppointmentApproved'
+import AnimatedPage from '../../services/Animation/AnimatedPage'
 
 
 const Notification = () => {
@@ -29,12 +30,15 @@ const Notification = () => {
   console.log(myAppointment);
   return (
     <div>
-      <Navbar />
-      {myAppointment?.status === "approved" ?
-        <AppointmentApproved />
-        :
-        <NotificationBox />
-      }
+      <AnimatedPage>
+
+        <Navbar />
+        {myAppointment?.status === "approved" ?
+          <AppointmentApproved />
+          :
+          <NotificationBox />
+        }
+      </AnimatedPage>
     </div>
   )
 }

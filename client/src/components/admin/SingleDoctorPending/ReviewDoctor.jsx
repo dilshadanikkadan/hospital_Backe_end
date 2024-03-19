@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { SingleDoctorPending, verifyApplicationDoctor, sendInvoice } from '../../../services/api/adminRoute'
 import { useFormik, Form, Formik, Field, replace } from "formik"
 import { InvoiceValidation } from '../../../services/validation/InvoiceValidation'
 import LoadingPage from '../../../pages/common/LoadingPage'
+import { SocketContext } from '../../../store/redux/slices/SocketContext'
 
 const initialValues = {
     message: ''
@@ -12,6 +13,17 @@ const initialValues = {
 
 
 const ReviewDoctor = () => {
+
+    let iduser;
+    const jwtToken = localStorage.getItem('persist:root');
+
+    if (JSON.parse(jwtToken).user !== "null" || JSON.parse(jwtToken).admin !== "null") {
+        const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+
+        const userId = decodedToken.id;
+        iduser = userId
+    }
+    const { sendDataToServer, socket } = useContext(SocketContext);
     const { id } = useParams()
     const [invoicesend, setInvoiceSend] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -24,11 +36,12 @@ const ReviewDoctor = () => {
         queryKey: ["singleDoctors", id],
         queryFn: SingleDoctorPending
     })
-
+    // console.log(singleDoctor);
     const { mutate: sendInvoiceMutate } = useMutation({
         mutationFn: sendInvoice,
         onSuccess: (data) => {
             if (data.success) {
+                sendDataToServer({ socketId: socket.id, _id: iduser,recieverId:singleDoctor?.user });
                 setInvoiceSend(true)
                 setLoading(false)
                 queryClient.invalidateQueries(["singleDoctors"])
@@ -42,27 +55,35 @@ const ReviewDoctor = () => {
     }
 
     const handleClick = () => {
-        setLoading(true)
+        // sendDataToServer({ message: 'Hello, neymar' });
         let credential = {
             recieverId: singleDoctor?.user,
             message,
             name: singleDoctor?.lastname
         }
         sendInvoiceMutate(credential)
+
+
+
+        setLoading(true)
+
     }
 
-    const {mutate:verifyApplicationMutate}=useMutation({
-        mutationFn:verifyApplicationDoctor,
-        onSettled:(data)=>{
-            if(data.success){
-               queryClient.invalidateQueries(["singleDoctors"])
+    const { mutate: verifyApplicationMutate } = useMutation({
+        mutationFn: verifyApplicationDoctor,
+        onSettled: (data) => {
+            if (data.success) {
+                queryClient.invalidateQueries(["singleDoctors"])
             }
         }
     })
 
-    const handleApplicationVerify =()=>{
+    const handleApplicationVerify = () => {
         verifyApplicationMutate(singleDoctor?.user)
 
+    }
+    const testSocket = () => {
+        sendDataToServer({ socketId: socket.id, _id: iduser,recieverId:singleDoctor?.user });
     }
     return (
         <>
@@ -78,7 +99,7 @@ const ReviewDoctor = () => {
                         <h3 className='text-2xl text-secondary font-info font-semibold '>Review Doctor</h3>
                         <div className="info flex flex-col gap-3 mt-6">
 
-                            <img className='w-32 h-[8rem] object-cover rounded-lg' src={singleDoctor?.profileImage} alt="" />
+                            <img onClick={testSocket} className='w-32 h-[8rem] object-cover rounded-lg' src={singleDoctor?.profileImage} alt="" />
                             <div className="des">
                                 <h3 className='text-secondary  fontinfo text-xl  font-semibold'><span>{singleDoctor?.firstname}</span> {singleDoctor?.lastname}</h3>
                                 <p className='text-gray-500'>{singleDoctor?.speciality}</p>
@@ -86,11 +107,11 @@ const ReviewDoctor = () => {
                             <div className="butns flex gap-3">
                                 {
                                     singleDoctor?.verification === "true" ?
-                                <button className='px-16 py-1 text-black bg-base-300 rounded-lg  ' >Verified</button> 
-                     
-                                
-                                :
-                                <button className='px-16 py-1 text-black bg-base-300 rounded-lg  ' onClick={() => hanleVerify(singleDoctor?.user)}>Verify</button> 
+                                        <button className='px-16 py-1 text-black bg-base-300 rounded-lg  ' >Verified</button>
+
+
+                                        :
+                                        <button className='px-16 py-1 text-black bg-base-300 rounded-lg  ' onClick={() => hanleVerify(singleDoctor?.user)}>Verify</button>
                                 }
 
                                 {
@@ -137,7 +158,7 @@ const ReviewDoctor = () => {
                     </div>
 
                     :
-                   <LoadingPage/>
+                    <LoadingPage />
 
             }
 
@@ -146,19 +167,14 @@ const ReviewDoctor = () => {
 
             <dialog ref={invoicRef} id="my_modal_5" className="modal  modal-bottom sm:modal-middle">
                 <div className="modal-box">
-                    <h3 className="font-bold text-lg">Add License</h3>
-                    <p className="py-4">are you sure want to delete </p>
+                    <h3 className="font-bold text-lg">Send Invoice</h3>
                     <div className="modal-action  flex items-center justify-center">
 
                         <form method="dialog">
-                            <label className="input input-bordered flex items-center gap-2 mt-5">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg>
-                                <input onChange={(e) => setMessage(e.target.value)} type="text" className="grow" placeholder="message" name='message'
+                      
+                                <textarea onChange={(e) => setMessage(e.target.value)}  className="textarea w-[20rem] border-dashed border-2 border-secondary" placeholder="Message"></textarea>
 
-                                />
-                            </label>
-
-                            <div className="div flex gap-5 mt-10">
+                            <div className="div flex justify-end gap-5 mt-10">
 
                                 <button className="btn bg-base-300">Cancel</button>
                                 <button onClick={handleClick} className="btn bg-secondary text-white">send</button>
@@ -183,7 +199,7 @@ const ReviewDoctor = () => {
                         <form method="dialog">
                             {/* if there is a button in form, it will close the modal */}
                             <button className="btn bg-base-300">Cancel</button>
-                            <button className="btn  bg-secondary text-white ml-3"  onClick={handleApplicationVerify}>Yes</button>
+                            <button className="btn  bg-secondary text-white ml-3" onClick={handleApplicationVerify}>Yes</button>
                         </form>
                     </div>
                 </div>

@@ -53,7 +53,7 @@ const UserListBox = ({ value }) => {
         <div>
 
 
-            <div className="wrapper w-[90%] mt-10 border-[1px] border-gray-200 mx-auto shadow-md">
+            <div className="wrapper w-[90%] mt-10 border-[1px] h-[64vh] overflow-y-scroll  border-gray-200 mx-auto shadow-md">
 
                 {isLoading && <p>loading</p>}
                 {isError && <p>error.</p>}

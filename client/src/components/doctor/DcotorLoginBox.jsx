@@ -68,7 +68,7 @@ const [errorMsg, setErrorMsg] = useState("")
 
 
                         <button
-                            className='py-3 w-[50%] rounded-xl font-desc text-white bg-secondary m-auto mt-5'>Log As Admin</button>
+                            className='py-3 w-[50%] rounded-xl font-desc text-white bg-secondary m-auto mt-5'>Log As Doctor</button>
                     </Form>
 
                 )}

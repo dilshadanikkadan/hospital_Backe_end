@@ -11,7 +11,7 @@ const SccessBox = () => {
                 <div className="div flex gap-5">
 
                     <button className='px-12 py-3 bg-base-300 rounded-md' onClick={()=> navigate("/")}>Return To Home</button>
-                    <button className='px-12 py-3 bg-secondary text-white rounded-md'>view Appointment Details </button>
+                    <button className='px-12 py-3 bg-secondary text-white rounded-md'  onClick={() => navigate("/viewAppointment")}>view Appointment Details </button>
                 </div>
             </div>
 

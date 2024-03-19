@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
-import { getAllDoctors, makeAppointment } from '../../../services/api/userRoute'
+import { getAllDoctors, makeAppointment, reScheduleAppointment } from '../../../services/api/userRoute'
 import { current } from '@reduxjs/toolkit';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const AppointmentTwoBox = () => {
+const ReSceduleBox = () => {
 
     let iduser;
     const jwtToken = localStorage.getItem('persist:root');
@@ -25,19 +25,24 @@ const AppointmentTwoBox = () => {
     const [selectedDoctorId, setSelectedDoctorId] = useState("");
     const [time, setTime] = useState(null)
     const [newBookedId, setNewBookedId] = useState("")
-    const [change,setChange]=useState(false)
+    const [change, setChange] = useState(false)
     const [idUser, setIdUser] = useState("");
     const [isFormValid, setIsFormValid] = useState(false);
     const { data: allDoctors } = useQuery({
         queryKey: ["allDoctors"],
         queryFn: getAllDoctors
     })
-    
+
     const { state } = useLocation()
     console.log(state);
     useEffect(() => {
+        if (state !== null || undefined) {
+            !change ? setSelectedDoctor(`${state?.firstname} ${state?.lastname}`) : ""
+            console.log("wroked here insed");
+        } else {
+            console.log("wroked here outside");
 
-      !change ?  setSelectedDoctor(`${state?.firstname} ${state?.lastname}`) :""
+        }
         setIsFormValid(selectedDoctor && dateChecked && selsctedDate && selectedMonth && time);
     }, [selectedDoctor, dateChecked, selsctedDate, selectedMonth, time]);
 
@@ -47,8 +52,18 @@ const AppointmentTwoBox = () => {
         console.log(event.target.value);
         setSelectedDoctor(event.target.value);
     };
-    const slectedDoctorData = allDoctors?.filter((x) => x.lastname == selectedDoctor.split(" ")[1]);
+    const slectedDoctorData = allDoctors?.filter((x) => x?.lastname == selectedDoctor?.split(" ")[1]);
     console.log(selectedDoctor);
+
+
+    const {mutate:rescheduleMutate}= useMutation({
+        mutationFn:reScheduleAppointment,
+        onSuccess:(data)=>{
+            if(data.success){
+                navigate("/makeAppointment/_2/sucess", { replace: true })
+            }
+        }
+    })
 
     const handleDateBoxClick = (dates) => {
         setDateChecked(true)
@@ -64,31 +79,27 @@ const AppointmentTwoBox = () => {
     }
 
     const handleSubmit = () => {
-    
-        navigate("/makeAppointment/_2", {
-            state: {
-                bookedId: newBookedId,
-                doctor: slectedDoctorData[0]._id,
-                doctorListId: slectedDoctorData[0].user,
-                patient: iduser,
-                date: selsctedDate,
-                month: selectedMonth,
-                amount:799,
-                time: {
-                    from: time.from,
-                    to: time.to,
-                    id: time._id
-                }
 
-
+        rescheduleMutate({
+            prevDoctodId:state?.prevDoctodId,
+            prevTimeId:state?.prevTimeId,
+            prevBookedId:state?.prevBookedId,
+            appointmentId:state?.myAppointmentId,
+            newDoctorId:slectedDoctorData[0]?.user,
+            newTimeId:time?._id,
+            newBookedId:newBookedId,
+            time: {
+                from: time.from,
+                to: time.to,
+                id: time._id
             }
         })
-
+        
     }
 
     return (
         <div className="form w-[60%] md:w-[28%]  m-auto mt-10 flex flex-col relative custom-select  ">
-               {
+            {
                 selectedDoctor?.length > 0 && selectedDoctor && slectedDoctorData?.length > 0 ? (
                     <div className='min-w-[10vw] hidden md:h-[15vh] lg:h-[28vh] shadow-md  absolute right-[-50%] md:flex flex-col items-center '>
                         <img className='h-24 w-24 rounded-lg object-cover' src={slectedDoctorData[0].profileImage} alt="" />
@@ -97,6 +108,7 @@ const AppointmentTwoBox = () => {
                     </div>
                 ) : null
             }
+
             <div className="div mb-5 ">
 
                 <h3>Amount</h3>
@@ -176,7 +188,7 @@ const AppointmentTwoBox = () => {
                     onClick={handleSubmit}
                     disabled={!isFormValid}
                 >
-                   Next
+                    Next
                 </button>
 
             </div>
@@ -189,4 +201,4 @@ const AppointmentTwoBox = () => {
     )
 }
 
-export default AppointmentTwoBox
+export default ReSceduleBox

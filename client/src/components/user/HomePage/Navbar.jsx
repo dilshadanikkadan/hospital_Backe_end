@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
@@ -8,9 +8,10 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../../store/redux/slices/userSlice';
 import { getAllNotification, userLogout, viewAppointment } from '../../../services/api/userRoute';
 import PersonIcon from '@mui/icons-material/Person';
-
+import { SocketContext } from '../../../store/redux/slices/SocketContext';
 
 const Navbar = () => {
+  const { sendDataToServer, socket } = useContext(SocketContext);
   const [iseOpen, setIsOpen] = useState(false)
   const { isAuthenticated } = useSelector((state) => state.user)
   const navigate = useNavigate()
@@ -25,11 +26,11 @@ const Navbar = () => {
     const userId = decodedToken.id;
     iduser = userId
   }
-  const { data: allNotification } = useQuery({
+  const { data: allNotification, refetch } = useQuery({
     queryKey: ["nitification", iduser],
     queryFn: getAllNotification,
   })
-
+  console.log(allNotification);
   const { data: myAppointment } = useQuery({
     queryKey: ["appointment", iduser],
     queryFn: viewAppointment
@@ -48,21 +49,44 @@ const Navbar = () => {
     dispatch(logoutUser())
 
 
+
+
   }
+  const handleChatTest = () => {
+    sendDataToServer({ message: 'Hello, server!' });
+    socket.on("getThisMsg", (data) => {
+      console.log(data);
+    })
+  }
+
+  useEffect(() => {
+    if (socket) {
+      console.log("Socket:", socket);
+      socket.on('notification', (newNotification) => {
+        console.log("notification came:", newNotification);
+        refetch();
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off('notification');
+      }
+    }
+  }, [socket, refetch]);
   return (
     <>
       <div className="navabar w-full overflow-hidden   border-[1px] border-b-gray-100 md:h-24  ">
-        <div className="navItems w-[83%] over h-full m-auto flex  flex-col md:flex-row">
+        <div className="navItems w-[84%] over h-full m-auto flex  flex-col md:flex-row  md:items-center">
           <div className="left flex-[6] flex justify-between mt-5">
-            <h3 className="logo text-4xl font-logo font-bold text-info ">E-Care</h3>
+            <h3 className="logo md:text-2xl lg:text-3xl mr-2 font-logo font-bold text-info ">E-CARE</h3>
 
-            <img onClick={() => setIsOpen(!iseOpen)} className='w-14 h-14 md:hidden' src="https://naziya-hospital.netlify.app/assets/img/icons/menu.png" alt="" />
+            <img onClick={() => setIsOpen(!iseOpen)} className='h-10 w-10  md:w-14 md:h-14 md:hidden' src="https://naziya-hospital.netlify.app/assets/img/icons/menu.png" alt="" />
           </div>
 
 
 
 
-          <div className={`right transition-all duration-300   ${!iseOpen ? "hidden" : ""}  flex-[7] flex flex-col  md:flex md:flex-row  md:items-center  gap-10 mt-5`}>
+          <div className={`right transition-all duration-300   ${!iseOpen ? "hidden" : "gap-3"}  flex-[7] flex flex-col  md:flex md:flex-row  md:items-center  md:gap-4 lg:gap-10 mt-5`}>
 
             <NavLink
               to="/"
@@ -86,7 +110,7 @@ const Navbar = () => {
             <NavLink to="/blogs" className={({ isActive }) => isActive ? "active  text-xl text-secondary " : 'text-xl text text-[#9095A1]'} >
               Blogs
             </NavLink>
-           
+
             <NavLink to="/contact" className={({ isActive }) => isActive ? "active  text-xl text-secondary " : 'text-xl text text-[#9095A1]'} >
               Contact
             </NavLink>
@@ -100,16 +124,18 @@ const Navbar = () => {
                     <NotificationsNoneIcon onClick={() => navigate("/notification")} />
                     {
 
-                      allNotification?.status == "success" ?
-                        <span className='absolute text-xs top-[-4px] right-[2px] py-[1px] rounded-full  px-[2px] bg-red-500 text-white'>{[allNotification].length}</span>
+                      allNotification?.verification == "true" ?
+                        <span className='absolute text-xs top-[-4px] right-[2px] py-[1px] rounded-full  px-[2px] bg-red-500 text-white'>3</span>
                         : myAppointment?.status == "approved" ?
                           <span className='absolute text-xs top-[-4px] right-[2px] py-[1px] rounded-full  px-[2px] bg-red-500 text-white'>{[myAppointment].length}</span>
 
                           :
-                          <span className='absolute text-xs top-[-4px] right-[2px] py-[1px] rounded-full  px-[2px] bg-red-500 text-white'>{[allNotification].length - 1}</span>
+                          <span className='absolute text-xs top-[-4px] right-[2px] py-[1px] rounded-full  px-[2px] bg-red-500 text-white'>
+                            {allNotification?.status === "success" ? 2 : (allNotification !== undefined && allNotification !== null) ? [allNotification].filter((item) => item !== null).length : 0}
+                          </span>
                     }
                   </div>
-                  <ChatIcon />
+                  <ChatIcon onClick={()=> navigate("/chat_doctors")}  />
                   <LogoutIcon onClick={handleLogout} className='text-blue-950 hover:text-red-700 text-3xl' />
                 </div> :
 

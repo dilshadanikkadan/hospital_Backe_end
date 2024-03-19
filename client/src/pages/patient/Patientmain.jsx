@@ -30,6 +30,12 @@ import ViewAppointment from './ViewAppointment'
 import SingleDoctorView from './SingleDoctorView'
 import DoctorsPage from './DoctorsPage'
 import LoadingPage from '../common/LoadingPage'
+import PaymentSuccessPage from './PaymentSuccessPage'
+import PaymentRecievedPage from './PaymentRecievedPage'
+import VerifiedPage from './VerifiedPage'
+import ResheduleAppointmentPage from './ResheduleAppointmentPage'
+import ChatPatientPage from './ChatPatientPage'
+import ChatWithPatients from '../doctor/ChatWithPatients'
 const Patientmain = () => {
 
   const router = createBrowserRouter([
@@ -40,7 +46,8 @@ const Patientmain = () => {
 
           <Home />
         </BlockeduserCheck>,
-      errorElement: <div>404  not found</div>
+      errorElement: <div>404  not hey</div>
+
     },
     {
       path: '/check',
@@ -78,32 +85,61 @@ const Patientmain = () => {
     {
       path: "/about/allDoctors/:id",
       element:
-          <SingleDoctorView/>
+        <SingleDoctorView />
     },
     {
       path: "/allDoctors/:id",
       element:
-          <SingleDoctorView/>
+        <SingleDoctorView />
     },
     {
       path: "/makeAppointment",
       element:
-          <AppointmentPageOne/>
+        <ApplicationProtectRoute>
+          <AppointmentPageTwo />
+
+        </ApplicationProtectRoute>
     },
     {
       path: "/makeAppointment/_2",
       element:
-          <AppointmentPageTwo/>
+        <AppointmentPageOne />
     },
     {
       path: "/makeAppointment/_2/sucess",
       element:
-          <AppointmentSucessPage/>
+        <AppointmentSucessPage />
     },
+    {
+      path: "/reshedule_appointment",
+      element:
+        <ResheduleAppointmentPage />
+    },
+    {
+      path: "/payment/sucess",
+      element:
+        <PaymentSuccessPage />
+    },
+    {
+      path: "/payment/recieved",
+      element:
+        <PaymentRecievedPage />
+    },
+    {
+      path: "/application/verified",
+      element:
+        <VerifiedPage />
+    },
+
     {
       path: "/viewAppointment",
       element:
-          <ViewAppointment/>
+        <ViewAppointment />
+    },
+    {
+      path: "/chat_doctors",
+      element:
+        <ChatWithPatients />
     },
     {
       path: "service/application_1",
@@ -135,6 +171,7 @@ const Patientmain = () => {
           <ApplicationSuccessPage />
         </ApplicationProtectRoute>
     },
+
     {
       path: "/login",
       element:
@@ -145,11 +182,11 @@ const Patientmain = () => {
     {
       path: "/profile",
       element:
-       <BlockeduserCheck>
-        <ApplicationProtectRoute>
-          <PatientProfile />
-        </ApplicationProtectRoute>
-       </BlockeduserCheck>
+        <BlockeduserCheck>
+          <ApplicationProtectRoute>
+            <PatientProfile />
+          </ApplicationProtectRoute>
+        </BlockeduserCheck>
     },
     {
       path: "/verifyEmail",
@@ -185,19 +222,19 @@ const Patientmain = () => {
     },
     {
       path: '/notification',
-      element: 
-      <BlockeduserCheck>
+      element:
+        <BlockeduserCheck>
 
-      <Notification/>
-      </BlockeduserCheck>
+          <Notification />
+        </BlockeduserCheck>
     },
     {
       path: '/notification/:id',
-      element: 
-      <BlockeduserCheck>
+      element:
+        <BlockeduserCheck>
 
-      <SingleNotification/>
-      </BlockeduserCheck>
+          <SingleNotification />
+        </BlockeduserCheck>
     },
     {
       path: '/contact',

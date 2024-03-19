@@ -11,15 +11,15 @@ const DoctorPendingList = () => {
     console.log(allPending);
     return (
         <>
-            <section className="antialiased  text-gray-600 w-full px-4 mt-10">
-                <div className="flex flex-col justify-center h-full">
+            <section className="antialiased  text-gray-600 w-full  px-4 mt-10 ">
+                <div className="flex flex-col justify-center  ">
                     {/* Table */}
-                    <div className="w-full max-w-[62rem] mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
+                    <div className="w-full  max-w-[62rem] mx-auto bg-white h-[60vh] overflow-y-scroll shadow-lg rounded-sm border border-gray-200">
                         <header className="px-5 py-4 border-b border-gray-100">
                             <h2 className="font-semibold text-gray-800">Pending request</h2>
                         </header>
                         <div className="p-3">
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-scroll md:overflow-hidden">
                                 <table className="table-auto w-full">
                                     <thead className="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
 

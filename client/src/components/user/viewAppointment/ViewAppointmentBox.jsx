@@ -4,6 +4,7 @@ import { cancelAppointment, viewAppointment } from '../../../services/api/userRo
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 const ViewAppointmentBox = () => {
+      
     const navigate = useNavigate()
 
     let iduser;
@@ -31,7 +32,7 @@ const ViewAppointmentBox = () => {
         queryFn: viewAppointment
 
     })
-    console.log(myAppointment);
+    console.log(myAppointment?._id);
     const handleCancelAppointment = () => {
          console.log(deleteAppointment);
         deleteAppointment({
@@ -40,9 +41,7 @@ const ViewAppointmentBox = () => {
             doctorListId: myAppointment?.doctorListId,
             bookedId: myAppointment?.bookedId
         })
-        console.log({
-
-        });
+      
     }
     return (
         <div className='w-full flex flex-col justify-center'>
@@ -99,6 +98,14 @@ const ViewAppointmentBox = () => {
             <div className="div w-[60%] m-auto flex   items-center justify-center gap-10">
 
                 <button className='mt-6 bg-base-300  py-3 px-6 rounded-lg ' onClick={() => navigate("/")}>Return To Home</button>
+                <button className='mt-6 bg-base-300  py-3 px-6 rounded-lg ' onClick={() => navigate("/reshedule_appointment",{state:{
+                    
+                    ...myAppointment?.doctor,
+                    myAppointmentId:myAppointment?._id,
+                    prevTimeId: myAppointment?.time.id,
+                    prevDoctodId: myAppointment?.doctorListId,
+                    prevBookedId: myAppointment?.bookedId
+                    }})}>Reshedule</button>
                 <button className='mt-6 bg-secondary text-white  py-3 px-6 rounded-lg ' onClick={handleCancelAppointment}>Cancel The Apoointment</button>
             </div>
         </div>

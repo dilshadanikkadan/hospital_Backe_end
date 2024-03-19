@@ -13,7 +13,7 @@ const ViewdoctorBox = () => {
     })
     return (
         <div className='w-[80%] m-auto'>
-            <div className="doctorInfo mt-10 flex justify-between items-center">
+            <div className="doctorInfo mt-10 flex justify-between items-center flex-col md:flex-row">
                 <div className="div flex gap-10 items-center">
 
                     <img className='w-28 h-28 rounded-full object-cover' src={doctor?.profileImage} alt="" />
@@ -25,12 +25,14 @@ const ViewdoctorBox = () => {
 
                 </div>
                 <div className="ingo">
-                    <button className='py-2 rounded-lg px-5 bg-secondary text-white' onClick={()=> navigate("/makeAppointment")}>Make An Appointment</button>
+                    <button className='py-2 rounded-lg px-3 mt-5 md:mt-0 bg-secondary text-white' onClick={()=> navigate("/makeAppointment",{state:{
+                        ...doctor
+                        }})}>Make An Appointment</button>
                 </div>
             </div>
 
 
-            <div className="cardWrapper mt-10 flex gap-8">
+            <div className="cardWrapper hidden mt-10 md:flex gap-8 ">
                 <div className="card w-1/3 border-[1px] border-gray-300 h-[15vh] flex items-center justify-center">
                     <p className='text-xl font-semibold capitalize'>4.9 <span>rating</span></p>
                 </div>

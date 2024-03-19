@@ -80,10 +80,14 @@ const SetDates = () => {
         let currentDay = date.getDate()
         console.log(date);
         let currentMonth = date.getMonth()
-        let checkingMonth = monthNames.findIndex((x) => x.includes(obj.month.toLowerCase()))
+        let checkingMonth = monthNames.findIndex((x) => x.includes(obj.month.toLowerCase()));
+        console.log("checking month is  :" + checkingMonth);
+        console.log("current month is  :" + currentMonth);
         if (allDates.map((x) => x.date).includes(obj.date)) {
+            console.log("eroor got btoh");
             return setErrorMsg("already exist the date")
-        } else if (obj.date < currentDay && currentMonth >= checkingMonth) {
+        } else if (obj.date < currentDay || checkingMonth !== currentMonth) {
+            console.log("eroor got btoh");
             return setErrorMsg("you can't add previos dates")
         }
         setDateArray((prev) => [...prev, obj]);
@@ -119,28 +123,28 @@ const SetDates = () => {
         <div className='flex  w-[80%] m-auto'>
             <div className="wrapper flex flex-wrap gap-10 mt-10  items-center justify-center ">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateCalendar onChange={handleDateChange} />
+                    <DateCalendar className='calenderBox' onChange={handleDateChange} />
                 </LocalizationProvider>
-                <div className="warpapper w-[35vw] h-[40vh] overflow-y-scroll bg-base-100 border-[1px] border-gray-200 rounded-lg shadow-xl relative">
+                <div className="warpapper w-[35vw] h-[50vh] overflow-y-scroll bg-base-100 border-dashed border-2 border-secondary rounded-lg shadow-xl relative">
                     {
                         errorMsg &&
 
-                        <p className='absolute top-[-30px] text-red-500'>{errorMsg}</p>
+                        <p className='mt-3 ml-3 capitalize text-red-500'>{errorMsg}</p>
                     }
                     <div className="wrap w-[90%] m-auto mt-5 flex flex-wrap gap-3">
                         {
                             allDates?.map((item, i) => (
-                                <div key={i} className="dateBox w-[12%] h-12 rounded-lg relative bg-[#8FE82B]  flex flex-col items-center " >
+                                <div key={item._id + Date.now()} className="dateBox cursor-pointer w-[12%] h-12 rounded-lg relative bg-[#8FE82B]  flex flex-col items-center">
                                     <CancelIcon className='text-secondary absolute top-[-7px] right-[-5px]' onClick={() => handledeleteDate(item?._id)} />
-
-                                    <p onClick={() => handleModal(item?._id)} key={item?._id} className='text-white text-1xl'>{item?.date}</p>
-                                    <p onClick={() => handleModal(item?._id)} key={item?._id} className='text-white text-sm'>{item?.month}</p>
+                                    <p onClick={() => handleModal(item?._id)} className='text-white text-1xl'>{item?.date}</p>
+                                    <p onClick={() => handleModal(item?._id)} className='text-white text-sm'>{item?.month}</p>
                                 </div>
                             ))
                         }
+
                     </div>
                 </div>
-          <BookesDates dates={allDates}/>
+                <BookesDates dates={allDates} />
             </div>
 
             {isOpen &&

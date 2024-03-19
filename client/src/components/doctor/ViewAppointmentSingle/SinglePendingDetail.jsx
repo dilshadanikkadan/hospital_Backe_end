@@ -1,4 +1,4 @@
-import { useMutation, useQuery ,useQueryClient} from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import { viewAppointment } from '../../../services/api/userRoute'
 import { useParams } from 'react-router-dom'
@@ -14,17 +14,17 @@ const SinglePendingDetail = () => {
 
     })
 
-    const {mutate:approveAppointmentMutate}= useMutation({
-        mutationFn:approveAppointment,
-        onSuccess:(data)=>{
-            if(data.success){
+    const { mutate: approveAppointmentMutate } = useMutation({
+        mutationFn: approveAppointment,
+        onSuccess: (data) => {
+            if (data.success) {
                 queryClient.invalidateQueries(["appointment"])
-                  console.log("sucess fully updatede");
+                console.log("sucess fully updatede");
             }
         }
     })
 
-    const handleapproval = ()=>{
+    const handleapproval = () => {
         approveAppointmentMutate(appointment?._id)
     }
     return (
@@ -60,6 +60,10 @@ const SinglePendingDetail = () => {
                                     <p>Status</p>
                                     <p className='capitalize'>{appointment?.status}</p>
                                 </div>
+                                <div className="info  flex justify-between text-lg">
+                                    <p>reason</p>
+                                    <p className='capitalize'>{appointment?.reason}</p>
+                                </div>
                             </div>
                         </div>
 
@@ -71,7 +75,12 @@ const SinglePendingDetail = () => {
                 <div className="div w-[60%] m-auto flex   items-center justify-center gap-10">
 
                     <button className='mt-6 bg-base-300  py-2 px-6 rounded-lg ' >Cancel</button>
-                    <button className='mt-6 bg-secondary text-white  py-2 px-6 rounded-lg ' onClick={handleapproval} >Approve</button>
+                    {
+                        appointment?.status === "approved" ?
+                        <button className='mt-6 bg-secondary text-white  py-2 px-6 rounded-lg '  >Approved</button>
+                        :
+                        <button className='mt-6 bg-secondary text-white  py-2 px-6 rounded-lg ' onClick={handleapproval} >Approve</button>
+                    }
                 </div>
             </div>
         </div>

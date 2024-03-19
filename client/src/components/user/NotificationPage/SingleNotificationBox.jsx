@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { getAllNotification, makePayment, validateMakePayment } from '../../../services/api/userRoute'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useIdUser } from '../../../store/others/BlockedUserCheck'
 
 const SingleNotificationBox = () => {
+    const navigate  = useNavigate()
     // const [orderId, setOrderId] = useState(null)
     
   const iduser = useIdUser();
@@ -36,6 +37,7 @@ const SingleNotificationBox = () => {
         mutationFn:validateMakePayment,
         onSuccess:(data)=>{
             console.log(data);
+            navigate("/payment/sucess",{replace:true})
         }
     })
 

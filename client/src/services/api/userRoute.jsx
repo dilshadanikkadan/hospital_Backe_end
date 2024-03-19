@@ -9,7 +9,7 @@ export const signUp = async (user) => {
       const res = await postRequest("api/user/SignUp", user)
       if (res.status == 200) {
 
-         return {success:true}
+         return { success: true }
       }
    } catch (error) {
       return { errorMsg: error.response.data.message }
@@ -79,134 +79,208 @@ export const verifyForgotOtp = async (data) => {
 }
 
 
-export const resetPassword =async(data)=>{
+export const resetPassword = async (data) => {
    try {
-      const res = await postRequest("api/user/resetPassword",data)
-      if(res.status === 200){
-         return {success:true}
+      const res = await postRequest("api/user/resetPassword", data)
+      if (res.status === 200) {
+         return { success: true }
       }
    } catch (error) {
       throw new error
    }
 }
 
-export const applyDoctorApplication=async(data)=>{
+export const applyDoctorApplication = async (data) => {
    try {
-      const res =await postRequest("api/user/apply_doctorApplication",data)
-      if(res.status === 200){
-         return {success:true}
+      const res = await postRequest("api/user/apply_doctorApplication", data)
+      if (res.status === 200) {
+         return { success: true }
       }
    } catch (error) {
-      
+
    }
 }
 
 
-export const checkApplied =async(id)=>{
+export const checkApplied = async (id) => {
    const userId = id.queryKey[1]
    try {
-      const res =await getRequest(`api/user/checkApplied/${userId}`)
-      if(res.status === 200){
+      const res = await getRequest(`api/user/checkApplied/${userId}`)
+      if (res.status === 200) {
          console.log(res.data);
          return res.data
       }
    } catch (error) {
-      
+
    }
 }
 
-export const getAllNotification = async(id)=>{
+export const getAllNotification = async (id) => {
    const userId = id.queryKey[1]
    try {
-      const res =await getRequest(`api/user/get_allNotification/${userId}`)
-      if(res.status === 200){
+      const res = await getRequest(`api/user/get_allNotification/${userId}`)
+      if (res.status === 200) {
          return res.data
       }
    } catch (error) {
-      
+
    }
 }
 
-export const makePayment=async(data)=>{
+export const makePayment = async (data) => {
    try {
-      const res = await postRequest("api/user/order",data)
-   
+      const res = await postRequest("api/user/order", data)
+
       return res.data
    } catch (error) {
       console.log(error);
-      
+
    }
 }
 
-export const validateMakePayment=async(data)=>{
+export const validateMakePayment = async (data) => {
    try {
-      const res = await postRequest("api/user/order/validate",data)
-   
+      const res = await postRequest("api/user/order/validate", data)
+
       return res.data
    } catch (error) {
       console.log(error);
-      
+
    }
 }
 
 
-export const getAllDoctors = async (data)=>{
+export const getAllDoctors = async (data) => {
    try {
-      const res =await getRequest("api/user/get_allDoctor")
+      const res = await getRequest("api/user/get_allDoctor")
 
       return res.data
    } catch (error) {
-      
+
    }
 }
 
-export const makeAppointment = async(data)=>{
+export const makeAppointment = async (data) => {
    try {
-      const res = await postRequest("api/user/make_appointment",data)
+      const res = await postRequest("api/user/make_appointment", data)
 
-      if(res.status === 200){
-         return {success:true}
+      if (res.status === 200) {
+         return { success: true }
       }
    } catch (error) {
-      
+
    }
 }
 
 
 
-export const viewAppointment= async (id)=>{
+export const viewAppointment = async (id) => {
    const userId = id.queryKey[1];
    try {
       const res = await getRequest(`api/user/view_appointment/${userId}`)
-      if(res.status === 200){
+      if (res.status === 200) {
          return res.data
       }
    } catch (error) {
-      
+
    }
 }
 
 
 
-export const cancelAppointment = async (data)=>{
+export const cancelAppointment = async (data) => {
    try {
-      const res = await postRequest("api/user/cancel_Appointment",data);
+      const res = await postRequest("api/user/cancel_Appointment", data);
 
-      if(res.status === 200){
-         return {success:true}
+      if (res.status === 200) {
+         return { success: true }
       }
    } catch (error) {
-      
+
    }
 }
 
-export const viewDoctorSingle = async (id)=>{
+export const viewDoctorSingle = async (id) => {
    const userId = id.queryKey[1];
 
    try {
       const res = await getRequest(`api/user/view_doctor/${userId}`)
-      if(res.status === 200){
+      if (res.status === 200) {
          return res.data
+      }
+   } catch (error) {
+
+   }
+}
+
+export const validatePatientPayment = async (data) => {
+   try {
+      const res = await postRequest("api/user/order/validatePatientPayment", data)
+
+      return {
+         success: true,
+         data: res.data
+      }
+   } catch (error) {
+      console.log(error);
+
+   }
+}
+
+export const reScheduleAppointment = async (date) => {
+   try {
+      const res = await postRequest("api/user/reScheduleAppointment", date)
+      if (res.status === 200) {
+         return {
+            success: true,
+            msg: res.data
+         }
+      }
+   } catch (error) {
+
+   }
+}
+
+export const getConversation = async (id) => {
+   const userId = id.queryKey[1];
+
+   try {
+      const res = await getRequest(`api/chat/getRoom/${userId}`)
+      if (res.status == 200) {
+         return {
+            success: true,
+            result: res.data
+         }
+      }
+   } catch (error) {
+      console.log(error);
+   }
+}
+
+export const getAllMessage = async (id) => {
+   const userId = id.queryKey[1];
+
+   try {
+      const res = await getRequest(`api/chat/getMessages/${userId}`);
+      if (res.status == 200) {
+        return res.data
+      }
+
+   } catch (error) {
+      console.log(error);
+   }
+
+}
+
+export const sendMessage =async (data)=>{
+   console.log(data);
+   try {
+      const res = await postRequest("api/chat/createMessage",data);
+      if(res.status == 200){
+         return {
+            success :true,
+            // result:res.data
+         }
       }
    } catch (error) {
       

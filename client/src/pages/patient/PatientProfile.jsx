@@ -4,22 +4,12 @@ import ProfileBox from '../../components/user/ProfilePgae/ProfileBox'
 import OverViewBoxProfile from '../../components/user/ProfilePgae/OverViewBoxProfile'
 import { useQuery } from '@tanstack/react-query'
 import { singleuser } from '../../services/api/adminRoute'
+import { currentUser } from '../../services/hooks/CuurentUser'
 
 const PatientProfile = () => {
-    let iduser;
-    const jwtToken = localStorage.getItem('persist:root');
-
-    if (jwtToken) {
-        const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
-
-        const userId = decodedToken.id;
-        iduser = userId
-    } else {
-        console.error("JWT token not found in local storage.");
-    }
-
+    let userId = currentUser()
     const { data: singleUser } = useQuery({
-        queryKey: ["user", iduser],
+        queryKey: ["user", userId],
         queryFn: singleuser
     })
     return (

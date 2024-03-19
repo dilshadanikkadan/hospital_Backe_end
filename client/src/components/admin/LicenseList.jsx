@@ -43,7 +43,7 @@ const LicenseList = () => {
     }
     return (
         <div>
-            <div className='w-[90%] mx-auto mt-10'>
+            <div className='w-[90%]  mx-auto mt-10'>
                 <h3 className='text-2xl font-info font-semibold'>Licenses</h3>
 
                 <label className="input input-bordered flex items-center gap-2 mt-5">
@@ -54,7 +54,7 @@ const LicenseList = () => {
 
                 <button onClick={() => licenseRef.current.showModal()} className='bg-secondary text-white  font-info px-5 py-2 rounded-md' >Add license</button>
             </div>
-            <div className="wrapper w-[90%] mt-10 border-[1px] border-gray-200 mx-auto shadow-md">
+            <div className="wrapper w-[90%] h-[50vh] overflow-y-scroll mt-10 border-[1px] border-gray-200 mx-auto shadow-md">
 
                 {
                     allLicenses?.map((item, i) => (

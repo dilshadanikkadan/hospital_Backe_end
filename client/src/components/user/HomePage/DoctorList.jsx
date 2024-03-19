@@ -10,6 +10,7 @@ const DoctorList = ({ searchTerm }) => {
     if (newSearchValue === undefined) {
         newSearchValue = ""
     }
+    // console.log( "newserch value is  :"+newSearchValue);
     const { inView, ref } = useInView();
     const controls = useAnimation();
     const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -44,16 +45,16 @@ const DoctorList = ({ searchTerm }) => {
                 ref={ref}
                 transition={{ duration: 1.5 }}
             >
-                <div className='w-full m-auto mt-10 flex flex-col items-center'>
-                    <div className="info w-[60%]">
+                <div className={`${searchTerm === undefined ? "w-[83%]" : "w-[100%]"} m-auto mt-10 flex flex-col items-center pb-10`}>
+                    <div className="info w-[90%] md:w-[60%]">
                         <h3 className="title text-center text-4xl">Our Doctors</h3>
-                        <p className='text-xl text-center mt-5'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Deserunt dolores officia similique </p>
+                        <p className='hidden md:block text-xl text-center mt-5'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Deserunt dolores officia similique </p>
                     </div>
                     <div className="listContainer w-full flex gap-5 mt-10 flex-wrap">
                         {filteredDoctors.map((doctor, i) => (
-                            <Link to={`/allDoctors/${doctor._id}`} key={i} className="card rounded-3xl w-full md:w-[48%] xl:w-[23%] h-[53vh] md:h-[53vh] bg-[#ECEFF2] gap-3 flex flex-col items-center justify-center">
-                                <img className='h-[70%] rounded-xl object-cover' src={doctor?.profileImage} alt="" />
-                                <h3 className="name text-info text-xl font-info">{doctor?.lastname}</h3>
+                            <Link to={`/allDoctors/${doctor._id}`} key={i} className="card rounded-3xl w-full md:w-[28%] xl:w-[23%] h-[53vh] sm:h-[63vh] md:h-[58vh] xl:h-[62vh] bg-[#ECEFF2] gap-3 flex flex-col items-center justify-center">
+                                <img className='h-[70%] w-[85%] object-center rounded-xl object-cover' src={doctor?.profileImage} alt="" />
+                                <h3 className="name text-info  font-semibold text-xl font-info capitalize">{doctor?.lastname}</h3>
                                 <p className='capitalize'>{doctor?.speciality}</p>
                             </Link>
                         ))}

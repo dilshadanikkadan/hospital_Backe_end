@@ -7,8 +7,7 @@ const PatientsListPending = () => {
 
     let iduser;
     const jwtToken = localStorage.getItem('persist:root');
-
-    if (JSON.parse(jwtToken).doctor !== "null") {
+    if (JSON.parse(jwtToken).doctor !== "null" ) {
         const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
 
         const userId = decodedToken.id;

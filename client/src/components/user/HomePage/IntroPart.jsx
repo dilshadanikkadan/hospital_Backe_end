@@ -1,27 +1,26 @@
 import React from 'react'
 import { motion } from "framer-motion"
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { viewAppointment } from '../../../services/api/userRoute'
+import { currentUser } from '../../../services/hooks/CuurentUser'
+import { singleuser } from '../../../services/api/adminRoute'
 
 const IntroPart = () => {
     const navigate = useNavigate()
-    let iduser;
-    const jwtToken = localStorage.getItem('persist:root');
-
-    if (JSON.parse(jwtToken).user !== "null") {
-        const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
-
-        const userId = decodedToken.id;
-        iduser = userId
-    }
+    const userId = currentUser()
 
     const { data: myAppointment } = useQuery({
-        queryKey: ["appointment", iduser],
+        queryKey: ["appointment", userId],
         queryFn: viewAppointment
 
     })
-    console.log(myAppointment);
+
+    const { data: logginedUser } = useQuery({
+        queryKey: ["user", userId],
+        queryFn: singleuser
+    })
+    console.log(logginedUser);
     return (
         <>
 
@@ -33,9 +32,18 @@ const IntroPart = () => {
                         animate={{ y: 10, opacity: 1 }}
                         transition={{ duration: 0.7 }}
                     >
-                        <h3 className='font-logo text-3xl mt-5 font-bold md:text-4xl lg:text-5xl md:mt-0'>Your Health is Our
-                            <br />
-                            Top Priority</h3>
+
+                        {logginedUser?.isDoctor ?
+
+                            <h3 className='font-info capitalize text-3xl mt-5 font-bold md:text-4xl lg:text-5xl md:mt-0'>Welcome to the Hospital
+                                <br />
+                            </h3>
+                            :
+                            <h3 className='font-logo text-3xl mt-5 font-bold md:text-4xl lg:text-5xl md:mt-0'>Your Health is Our
+                                <br />
+                                Top Priority</h3>
+                        }
+
                         <div className="info  w-[70%]">
 
                             <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dignissimos, rem ad quo voluptates sapiente, nobis dolorum neque saepe quae consectetur at ratione obcaecati. Voluptas asperiores enim animi odit. Corporis, nemo.</p>
@@ -48,11 +56,14 @@ const IntroPart = () => {
 
 
                                 <button className='bg-secondary rounded-md text-white px-3 py-3' onClick={() => navigate("/viewAppointment")} >View Appointment</button>
-                                :  myAppointment?.status === "approved" ?
+                                : myAppointment?.status === "approved" ?
 
-                                <button className='bg-secondary rounded-md text-white px-3 py-3' onClick={() => navigate("/viewAppointment")} >View Appointment</button>
-                                :
-                            <button className='bg-secondary rounded-md text-white px-3 py-3' onClick={() => navigate("/makeAppointment")}>Make an Appointment</button>
+                                    <button className='bg-secondary rounded-md text-white px-3 py-3' onClick={() => navigate("/viewAppointment")} >View Appointment</button>
+                                    : logginedUser?.isDoctor ?
+                                        <Link className='bg-secondary rounded-md text-white px-3 py-3' to={`/doctor/login`} target='_blank'>Log As Doctor</Link>
+                                        :
+                                        <button className='bg-secondary rounded-md text-white px-3 py-3' onClick={() => navigate("/makeAppointment")}>Make an Appointment</button>
+
 
                             }
                         </div>
