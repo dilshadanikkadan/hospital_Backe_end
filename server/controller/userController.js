@@ -247,7 +247,6 @@ export const checkApplied = async (req, res) => {
 // get all notification 
 
 export const allNotification = async (req, res, next) => {
-    console.log(req.params.id);
     if (req.params.id === "undefined") {
         return next(createError(400, "no id here"))
     }
@@ -338,8 +337,6 @@ export const bookAppointment = async (req, res) => {
             lastname,
             bookedId,
             doctorListId
-
-
         })
 
         console.log("time id :" + time.id);
@@ -387,7 +384,7 @@ export const viewAppointment = async (req, res) => {
 }
 
 
-export const cancelAppointment= async (req, res) => {
+export const cancelAppointment = async (req, res) => {
     const { appointmentId, timeId, doctorListId, bookedId } = req.body
     try {
         const response = await Appointment.findByIdAndDelete(appointmentId);
@@ -417,13 +414,102 @@ export const cancelAppointment= async (req, res) => {
     }
 }
 
-export  const viewSingleDoctor =async(req,res)=>{
+export const viewSingleDoctor = async (req, res) => {
     const doctodId = req.params.id
-    console.log("doctor id :"+doctodId);
+    console.log("doctor id :" + doctodId);
     try {
-        const response = await ApprovedDoctorModel.findOne({_id : doctodId});
+        const response = await ApprovedDoctorModel.findOne({ _id: doctodId });
         return res.status(200).json(response)
     } catch (error) {
         console.log(error);
     }
 }
+
+
+
+export const validatePatientPayment = async (req, res) => {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+    try {
+        const sha = crypto.createHmac("sha256", "o43nfduaDsXdAutXOQC5rIGt");
+        sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+        const digest = sha.digest("hex");
+        if (digest !== razorpay_signature) {
+            return res.status(400).json("not valid your payment");
+        }
+        return res.status(200).json({
+            msg: "payment successfully completed",
+            paymentId: razorpay_payment_id,
+            orderId: razorpay_order_id
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export const reScheduleAppointment = async (req, res) => {
+    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time ,date,month} = req.body
+  
+    try {
+        const currentDoctor = await ApprovedDoctorModel.findOne({user:newDoctorId})
+        const updateFields = {
+            doctor: currentDoctor._id,
+            bookedId: newBookedId,
+            doctorListId:currentDoctor.user,
+            time: time,
+            date,
+            month
+        };
+        console.log(req.body);
+        console.log(newDoctorId);
+        const updateStatus = await ApprovedDoctorModel.updateOne(
+            {
+                user: newDoctorId,
+                "BookedDates._id": newBookedId,
+                "BookedDates.time._id": newTimeId
+            },
+            {
+                $set: {
+                    "BookedDates.$[outerElem].time.$[innerElem].status": "success"
+                }
+            },
+            {
+                arrayFilters: [
+                    { "outerElem._id": newBookedId },
+                    { "innerElem._id": newTimeId }
+                ],
+                new: true
+            }
+        );
+        const update= await Appointment.findByIdAndUpdate(appointmentId,{$set:updateFields})
+
+        const updatePrevStatus = await ApprovedDoctorModel.updateOne(
+            {
+                user: prevDoctodId,
+                "BookedDates._id": prevBookedId,
+                "BookedDates.time._id": prevTimeId
+            },
+            {
+                $set: {
+                    "BookedDates.$[outerElem].time.$[innerElem].status": "pending"
+                }
+            },
+            {
+                arrayFilters: [
+                    { "outerElem._id": prevBookedId },
+                    { "innerElem._id": prevTimeId }
+                ],
+                new: true
+            }
+        );
+
+
+
+        res.status(200).json(currentDoctor)
+
+    } catch (error) {
+
+    }
+}
+
+

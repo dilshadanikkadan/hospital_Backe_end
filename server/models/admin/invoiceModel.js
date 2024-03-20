@@ -43,7 +43,10 @@ const invoiceSchema = mongoose.Schema({
         default: true,
 
     },
-
+    verification:{
+        type:String,
+        dafault:"false"
+     },
     companyName: {
         type: String,
         default: "E-care",

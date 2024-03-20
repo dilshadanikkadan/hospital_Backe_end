@@ -1,5 +1,5 @@
 import express from 'express';
-import { SignUp, viewSingleDoctor, cancelAppointment,viewAppointment,bookAppointment,getAllDoctor,verifyEmail, makePaymentDcotorValidate,makePaymentDcotor,allNotification,chekLicenseIsValid,forgot_password, login, resetPassword, logout ,checkApplied,verifyForgotOtp,applyDoctorApplication} from '../controller/userController.js';
+import { SignUp, viewSingleDoctor, reScheduleAppointment,validatePatientPayment,cancelAppointment,viewAppointment,bookAppointment,getAllDoctor,verifyEmail, makePaymentDcotorValidate,makePaymentDcotor,allNotification,chekLicenseIsValid,forgot_password, login, resetPassword, logout ,checkApplied,verifyForgotOtp,applyDoctorApplication} from '../controller/userController.js';
 import { verifyAdmin,verifyDoctor, verifyToken, verifyUser } from '../utils/verifyToken.js';
 import { SuccessMsg } from '../utils/sucess.js';
 import { validateSignup } from '../middlewires/signUpvalidate.js';
@@ -15,12 +15,13 @@ router.post('/forgot_password', forgot_password)
 router.post('/resetPassword', resetPassword)
 router.post('/verifyForgotOtp',verifyForgotOtp)
 router.post('/apply_doctorApplication',verifyUser,applyDoctorApplication)
-router.post('/chek_licenseIsValid',verifyUser,chekLicenseIsValid) 
+router.post('/chek_licenseIsValid',verifyUser,chekLicenseIsValid)  
 
 
 //make payment
 router.post('/order',makePaymentDcotor)
 router.post('/order/validate',makePaymentDcotorValidate)
+router.post('/order/validatePatientPayment',validatePatientPayment)
 
 router.get("/checkApplied/:userId",checkApplied) 
 router.get('/get_allNotification/:id',allNotification)
@@ -28,13 +29,12 @@ router.get("/get_allDoctor",getAllDoctor)
 router.post('/make_appointment',bookAppointment)
 router.get('/view_appointment/:id',viewAppointment)
 router.post('/cancel_Appointment',cancelAppointment)
+router.post('/reScheduleAppointment',reScheduleAppointment)
 router.get('/view_doctor/:id',viewSingleDoctor)
 
 
 
 router.get("/check",  (req, res, next) => {
-    res.cookie('token',"dilshad");
-    const token = req.cookies.token;
-    return res.json(token)
+   res.send("hey dilshad")
 }) 
-export default router;
+export default router; 

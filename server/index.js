@@ -8,6 +8,7 @@ dotenv.config();
 import userRoute from './routes/userRoute.js';
 import adminRoute from './routes/adminRoute.js'
 import doctorRoute from './routes/doctorRoute.js'
+import chatRoute from './routes/chatRoute.js'
 import cookieParser from 'cookie-parser';
 import cors from 'cors'
 import http from "http"
@@ -37,6 +38,7 @@ app.use(cookieParser());
 app.use('/api/user', userRoute);
 app.use('/api/admin', adminRoute);
 app.use('/api/doctor', doctorRoute)
+app.use('/api/chat',chatRoute)
 
 
 // error middleware

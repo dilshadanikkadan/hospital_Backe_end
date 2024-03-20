@@ -43,8 +43,7 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-
-
+    amount:String,
     reason: String,
     status: {
         type: String,
