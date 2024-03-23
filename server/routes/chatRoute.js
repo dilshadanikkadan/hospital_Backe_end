@@ -1,15 +1,19 @@
 import express from 'express';
 
 import { verifyAdmin, verifyDoctor, verifyToken, verifyUser } from '../utils/verifyToken.js';
-import {createRoom,getRoom,getMessages,createMessage} from '../controller/chatController/chatRoomcontroller.js';
+import {createRoom,getRoom,readMessage,deleteForMe,getMessages,createMessage,deleteEveryOne} from '../controller/chatController/chatRoomcontroller.js';
 
 const router = express.Router();
 
 
 router.post("/createRoom",createRoom)
-router.get("/getRoom/:id",getRoom)
+router.get("/getRoom/:id",getRoom)  ;
 
 
-router.post('/createMessage',createMessage)
-router.get('/getMessages/:id',getMessages)
+
+router.post('/createMessage',createMessage);
+router.delete('/delete_everyOne/:id',deleteEveryOne);
+router.post('/delete_forMe/:id',deleteForMe)
+router.get('/getMessages/:id',getMessages);
+router.post('/read_message',readMessage)
 export default router; 

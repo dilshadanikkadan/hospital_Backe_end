@@ -144,7 +144,7 @@ export const pendingAppointment=async(req,res)=>{
 export const approveAppointment =async(req,res,next)=>{
     const {apppointmentId} = req.body
     try {
-        const response = await Appointment.findOneAndUpdate({_id:apppointmentId},{$set:{status:"approved"}},{new:true});
+        const response = await Appointment.findOneAndUpdate({_id:apppointmentId},{$set:{status:"completed"}},{new:true});
         return res.status(200).json(response)
     } catch (error) {
         next(createError(400,error))

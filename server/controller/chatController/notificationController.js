@@ -2,15 +2,20 @@
 let onlineUsers = []
 
 const addOnlineUser = (currentUser) => {
-    const existingUserIndex = onlineUsers.findIndex((user) => user._id === currentUser._id);
-    if (existingUserIndex !== -1) {
-        if (onlineUsers[existingUserIndex].socketId !== currentUser.socketId) {
-            onlineUsers[existingUserIndex].socketId = currentUser.socketId;
+    if (currentUser._id && currentUser.socketId) { // Check if both _id and socketId exist
+        const existingUserIndex = onlineUsers.findIndex((user) => user._id === currentUser._id);
+        if (existingUserIndex !== -1) {
+            if (onlineUsers[existingUserIndex].socketId !== currentUser.socketId) {
+                onlineUsers[existingUserIndex].socketId = currentUser.socketId;
+            }
+        } else {
+            onlineUsers.push(currentUser);
         }
     } else {
-        onlineUsers.push(currentUser);
+        console.log("Both _id and socketId must be provided.");
     }
 };
+
 
 
 export default function NotificationContoller(io) {
@@ -19,11 +24,13 @@ export default function NotificationContoller(io) {
 
         socket.emit("me", socket.id)
 
-
         socket.on("sendId", (data) => {
             console.log(data);
             addOnlineUser(data)
             // currentUsers.push(data)   
+        });
+        socket.on("removeUserOnline", (data) => {
+            onlineUsers.filter((user) => user._id !== data.iduser)
         })
         socket.emit("getOnlineUsers", onlineUsers)
         socket.on("sendData", ({ socketId, _id, recieverId }) => {
@@ -79,12 +86,10 @@ export default function NotificationContoller(io) {
         socket.on("cammeraOn", (data) => {
             console.log("Received track information:", data.newStream);
             console.log("user call is:", data.userToCall);
-            
-
             const filtered = onlineUsers.find((user) => user._id === data.userToCall);
             io.to(filtered?.socketId).emit("cammeraOnCheck", { newStream: data.newStream })
         })
- 
+
         socket.on("sendCalling", ({ recieverId, msg }) => {
             console.log(recieverId);
             console.log(msg);

@@ -12,6 +12,7 @@ import Razorpay from 'razorpay';
 import crypto from "crypto"
 import ApprovedDoctorModel from '../models/Doctor/ApprovedDoctorModel.js'
 import Appointment from '../models/AppointmentModel.js'
+import ReviewModel from '../models/socket/ReviewModel.js'
 
 
 //register
@@ -448,14 +449,14 @@ export const validatePatientPayment = async (req, res) => {
 
 
 export const reScheduleAppointment = async (req, res) => {
-    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time ,date,month} = req.body
-  
+    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time, date, month } = req.body
+
     try {
-        const currentDoctor = await ApprovedDoctorModel.findOne({user:newDoctorId})
+        const currentDoctor = await ApprovedDoctorModel.findOne({ user: newDoctorId })
         const updateFields = {
             doctor: currentDoctor._id,
             bookedId: newBookedId,
-            doctorListId:currentDoctor.user,
+            doctorListId: currentDoctor.user,
             time: time,
             date,
             month
@@ -481,7 +482,7 @@ export const reScheduleAppointment = async (req, res) => {
                 new: true
             }
         );
-        const update= await Appointment.findByIdAndUpdate(appointmentId,{$set:updateFields})
+        const update = await Appointment.findByIdAndUpdate(appointmentId, { $set: updateFields })
 
         const updatePrevStatus = await ApprovedDoctorModel.updateOne(
             {
@@ -503,8 +504,6 @@ export const reScheduleAppointment = async (req, res) => {
             }
         );
 
-
-
         res.status(200).json(currentDoctor)
 
     } catch (error) {
@@ -513,3 +512,46 @@ export const reScheduleAppointment = async (req, res) => {
 }
 
 
+export const makeReview = async (req, res) => {
+
+    const { patient, doctor, doctorListId, reviewText, rating } = req.body
+    try {
+        const newReviewShema = new ReviewModel({
+            patient,
+            doctor,
+            doctorListId,
+            reviewText,
+            rating
+        });
+        const saved = await newReviewShema.save();
+        res.status(200).json(saved)
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+export const getReviews = async (req, res) => {
+    console.log("we reached hetre ayahoo :" + req.params.id);
+    try {
+        const response = await ReviewModel.find({ doctorListId: '65f529f0144c50a64ac067a0' }).populate("patient")
+        res.status(200).json(response)
+    } catch (error) {
+        console.log();
+
+    }
+}
+
+export const updateReview = async (req, res) => {
+    const { reviewId, ...others } = req.body;
+    try {
+        const response = await ReviewModel.findByIdAndUpdate(reviewId, {
+            $set: {
+                ...others
+            }
+        },{new:true});
+         res.status(200).json(response)
+    } catch (error) {
+
+    }
+}
