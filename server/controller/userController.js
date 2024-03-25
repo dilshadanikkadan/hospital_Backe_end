@@ -376,7 +376,7 @@ export const bookAppointment = async (req, res) => {
 export const viewAppointment = async (req, res) => {
     const patientId = req.params.id
     try {
-        const response = await Appointment.findOne({ $or: [{ patient: patientId }, { _id: patientId }] }).populate('doctor');
+        const response = await Appointment.find({ $or: [{ patient: patientId }, { _id: patientId },{doctorListId:patientId}] }).populate('doctor');
 
         return res.status(200).json(response)
     } catch (error) {
@@ -450,9 +450,9 @@ export const validatePatientPayment = async (req, res) => {
 
 export const reScheduleAppointment = async (req, res) => {
     const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time, date, month } = req.body
-
+    console.log( "date is here",date);
     try {
-        const currentDoctor = await ApprovedDoctorModel.findOne({ user: newDoctorId })
+        const currentDoctor = await ApprovedDoctorModel.findOne({ user: newDoctorId });
         const updateFields = {
             doctor: currentDoctor._id,
             bookedId: newBookedId,
@@ -461,8 +461,8 @@ export const reScheduleAppointment = async (req, res) => {
             date,
             month
         };
-        console.log(req.body);
-        console.log(newDoctorId);
+        // console.log(req.body);
+        console.log(updateFields);
         const updateStatus = await ApprovedDoctorModel.updateOne(
             {
                 user: newDoctorId,
@@ -534,7 +534,7 @@ export const makeReview = async (req, res) => {
 export const getReviews = async (req, res) => {
     console.log("we reached hetre ayahoo :" + req.params.id);
     try {
-        const response = await ReviewModel.find({ doctorListId: '65f529f0144c50a64ac067a0' }).populate("patient")
+        const response = await ReviewModel.find({ doctorListId:req.params.id  }).populate("patient")
         res.status(200).json(response)
     } catch (error) {
         console.log();
@@ -549,9 +549,18 @@ export const updateReview = async (req, res) => {
             $set: {
                 ...others
             }
-        },{new:true});
-         res.status(200).json(response)
+        }, { new: true });
+        res.status(200).json(response)
     } catch (error) {
 
+    }
+}
+
+export const myAppointments = async (req, res) => {
+    try {
+        const response = await Appointment.find({ patient: req.params.id }).populate('doctor');
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
     }
 }

@@ -89,6 +89,12 @@ export default function NotificationContoller(io) {
             const filtered = onlineUsers.find((user) => user._id === data.userToCall);
             io.to(filtered?.socketId).emit("cammeraOnCheck", { newStream: data.newStream })
         })
+        
+        socket.on("videoEnd",(data)=>{
+            
+            const filtered = onlineUsers.find((user) => user._id === data.userToCall);
+            io.to(filtered?.socketId).emit("endVideoCall", { msg:"end"})
+        })
 
         socket.on("sendCalling", ({ recieverId, msg }) => {
             console.log(recieverId);

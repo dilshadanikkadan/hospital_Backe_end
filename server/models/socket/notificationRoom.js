@@ -8,7 +8,7 @@ const notificationRoom = mongoose.Schema({
                 ref: 'User', 
                 unique:true
             },
-            lastMessage: {
+            lastMessage: { 
                 type: String
             }
         }
