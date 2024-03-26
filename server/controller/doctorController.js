@@ -83,39 +83,76 @@ export const deleteDate = async (req, res) => {
 
 //setting time
 export const setTime = async (req, res) => {
-
-    const { bookedDateId, userId ,timeObj} = req.body
+    const { bookedDateId, userId, timeObj } = req.body;
     console.log(bookedDateId);
     console.log(userId);
     try {
         const response = await ApprovedDoctorModel.findOneAndUpdate(
             { user: userId, "BookedDates._id": bookedDateId },
-            { $push: { "BookedDates.$.time": {
-               from:timeObj.from,
-               to:timeObj.to
-            } } },
+            {
+                $push: {
+                    "BookedDates.$.time": {
+                        from: timeObj.from,
+                        to: timeObj.to,
+                        availbaleTimes: generateTimeIntervals(timeObj.from, timeObj.to)
+                    }
+                }
+            },
             { new: true }
+        );
 
-
-        )
-
-        return res.status(200).json(response)
+        return res.status(200).json(response);
     } catch (error) {
-
+        // Handle error
     }
+}
+
+// Function to generate time intervals
+const generateTimeIntervals = (startTime, endTime) => {
+
+
+    const intervals = [];
+    let startHour = parseInt(startTime);
+    let endHour = parseInt(endTime);
+    startHour.toString().length == 1 ? startHour += 12 : ""
+    endHour.toString().length == 1 ? endHour += 12 : ""
+
+
+    console.log("Start Time:", startHour);
+    console.log("End Time:", endHour);
+    const adjustedEndHour = endHour < startHour ? endHour + 24 : endHour;
+
+    for (let currentHour = startHour; currentHour <= adjustedEndHour; currentHour++) {
+
+        if (currentHour >= 0 && currentHour < 18) {
+            for (let currentMinute = 0; currentMinute < 60; currentMinute += 15) {
+                let hour = currentHour % 24;
+                hour > 12 ? hour -= 12 : ""
+
+                let from = `${hour < 10 ? '0' : ''}${hour}:${currentMinute < 10 ? '0' : ''}${currentMinute}`;
+                intervals.push({
+                    from,
+                    status:""
+                });
+            }
+        }
+    }
+
+    console.log(intervals);
+    return intervals;
 }
 
 
 //setting time
 export const deleteTime = async (req, res) => {
 
-    const { bookedDateId, userId ,timeId} = req.body
+    const { bookedDateId, userId, timeId } = req.body
     console.log(bookedDateId);
     console.log(userId);
     try {
         const response = await ApprovedDoctorModel.findOneAndUpdate(
             { user: userId, "BookedDates._id": bookedDateId },
-            { $pull: { "BookedDates.$.time":{_id:timeId} } },
+            { $pull: { "BookedDates.$.time": { _id: timeId } } },
             { new: true }
 
 
@@ -128,26 +165,26 @@ export const deleteTime = async (req, res) => {
 }
 
 
-export const pendingAppointment=async(req,res)=>{
-    const {doctorId}=req.params
-    console.log("parms is :"+req.params.doctorId); 
+export const pendingAppointment = async (req, res) => {
+    const { doctorId } = req.params
+    console.log("parms is :" + req.params.doctorId);
     try {
-        const currentDoctor = await ApprovedDoctorModel.findOne({user:doctorId})
-        const checkAppointment = await Appointment.find({doctor:currentDoctor._id});
+        const currentDoctor = await ApprovedDoctorModel.findOne({ user: doctorId })
+        const checkAppointment = await Appointment.find({ doctor: currentDoctor._id });
         return res.status(200).json(checkAppointment)
     } catch (error) {
         console.log(error);
-        
+
     }
 }
 
-export const approveAppointment =async(req,res,next)=>{
-    const {apppointmentId} = req.body
+export const approveAppointment = async (req, res, next) => {
+    const { apppointmentId } = req.body
     try {
-        const response = await Appointment.findOneAndUpdate({_id:apppointmentId},{$set:{status:"completed"}},{new:true});
+        const response = await Appointment.findOneAndUpdate({ _id: apppointmentId }, { $set: { status: "completed" } }, { new: true });
         return res.status(200).json(response)
     } catch (error) {
-        next(createError(400,error))
+        next(createError(400, error))
         console.log("error");
     }
 }

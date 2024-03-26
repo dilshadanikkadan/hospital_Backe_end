@@ -323,7 +323,8 @@ export const getAllDoctor = async (req, res) => {
 
 export const bookAppointment = async (req, res) => {
 
-    const { patient, doctor, doctorListId, bookedId, phoneNo, lastname, firstname, email, date, time, month, reason } = req.body
+    const { patient, doctor, doctorListId, bookedId, phoneNo, lastname, firstname, email, date, time, month, reason, timeSelected } = req.body;
+    console.log(req.body);
     try {
         const newAppintmentSchema = new Appointment({
             patient,
@@ -337,34 +338,35 @@ export const bookAppointment = async (req, res) => {
             firstname,
             lastname,
             bookedId,
-            doctorListId
+            doctorListId,
+            timeSelected
         })
 
         console.log("time id :" + time.id);
         console.log("bookedId :" + bookedId);
         console.log("doctor :" + doctor);
-
-
+        console.log("values", timeSelected);
         const updateStatus = await ApprovedDoctorModel.updateOne(
             {
                 user: doctorListId,
                 "BookedDates._id": bookedId,
-                "BookedDates.time._id": time.id
+                "BookedDates.time._id": time.id,
+                "BookedDates.time.availbaleTimes.from": { $in: [timeSelected] }
             },
             {
                 $set: {
-                    "BookedDates.$[outerElem].time.$[innerElem].status": "success"
+                    "BookedDates.$[outerElem].time.$[innerElem].availbaleTimes.$[availElem].status": "booked"
                 }
             },
             {
                 arrayFilters: [
                     { "outerElem._id": bookedId },
-                    { "innerElem._id": time.id }
+                    { "innerElem._id": time.id },
+                    { "availElem.from": { $in: [timeSelected] } }
                 ],
                 new: true
             }
         );
-
 
         const saved = await newAppintmentSchema.save()
         res.status(200).json(updateStatus)
@@ -376,7 +378,7 @@ export const bookAppointment = async (req, res) => {
 export const viewAppointment = async (req, res) => {
     const patientId = req.params.id
     try {
-        const response = await Appointment.find({ $or: [{ patient: patientId }, { _id: patientId },{doctorListId:patientId}] }).populate('doctor');
+        const response = await Appointment.find({ $or: [{ patient: patientId }, { _id: patientId }, { doctorListId: patientId }] }).populate('doctor');
 
         return res.status(200).json(response)
     } catch (error) {
@@ -386,24 +388,26 @@ export const viewAppointment = async (req, res) => {
 
 
 export const cancelAppointment = async (req, res) => {
-    const { appointmentId, timeId, doctorListId, bookedId } = req.body
+    const { appointmentId, timeId, doctorListId, bookedId, timeSelected } = req.body
     try {
         const response = await Appointment.findByIdAndDelete(appointmentId);
         const updateStatus = await ApprovedDoctorModel.updateOne(
             {
                 user: doctorListId,
                 "BookedDates._id": bookedId,
-                "BookedDates.time._id": timeId
+                "BookedDates.time._id": timeId,
+                "BookedDates.time.availbaleTimes.from": { $in: [timeSelected] }
             },
             {
                 $set: {
-                    "BookedDates.$[outerElem].time.$[innerElem].status": "pending"
+                    "BookedDates.$[outerElem].time.$[innerElem].availbaleTimes.$[availElem].status": ""
                 }
             },
             {
                 arrayFilters: [
                     { "outerElem._id": bookedId },
-                    { "innerElem._id": timeId }
+                    { "innerElem._id": timeId },
+                    { "availElem.from": { $in: [timeSelected] } }
                 ],
                 new: true
             }
@@ -449,8 +453,8 @@ export const validatePatientPayment = async (req, res) => {
 
 
 export const reScheduleAppointment = async (req, res) => {
-    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time, date, month } = req.body
-    console.log( "date is here",date);
+    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time, date, month, timeSelected,prevTimeSelected } = req.body
+    console.log("date is here", date);
     try {
         const currentDoctor = await ApprovedDoctorModel.findOne({ user: newDoctorId });
         const updateFields = {
@@ -459,51 +463,61 @@ export const reScheduleAppointment = async (req, res) => {
             doctorListId: currentDoctor.user,
             time: time,
             date,
+            timeSelected,
             month
         };
         // console.log(req.body);
-        console.log(updateFields);
+        // console.log(updateFields);
+
+
         const updateStatus = await ApprovedDoctorModel.updateOne(
             {
                 user: newDoctorId,
                 "BookedDates._id": newBookedId,
-                "BookedDates.time._id": newTimeId
+                "BookedDates.time._id": newTimeId,
+                "BookedDates.time.availbaleTimes.from": { $in: [timeSelected] }
             },
             {
                 $set: {
-                    "BookedDates.$[outerElem].time.$[innerElem].status": "success"
+                    "BookedDates.$[outerElem].time.$[innerElem].availbaleTimes.$[availElem].status": "booked"
                 }
             },
             {
                 arrayFilters: [
                     { "outerElem._id": newBookedId },
-                    { "innerElem._id": newTimeId }
+                    { "innerElem._id": newTimeId },
+                    { "availElem.from": { $in: [timeSelected] } }
                 ],
                 new: true
             }
         );
         const update = await Appointment.findByIdAndUpdate(appointmentId, { $set: updateFields })
 
-        const updatePrevStatus = await ApprovedDoctorModel.updateOne(
+
+        const updateStatusOne = await ApprovedDoctorModel.updateOne(
             {
                 user: prevDoctodId,
                 "BookedDates._id": prevBookedId,
-                "BookedDates.time._id": prevTimeId
+                "BookedDates.time._id": prevTimeId,
+                "BookedDates.time.availbaleTimes.from": { $in: [prevTimeSelected] }
             },
             {
                 $set: {
-                    "BookedDates.$[outerElem].time.$[innerElem].status": "pending"
+                    "BookedDates.$[outerElem].time.$[innerElem].availbaleTimes.$[availElem].status": ""
                 }
             },
             {
                 arrayFilters: [
                     { "outerElem._id": prevBookedId },
-                    { "innerElem._id": prevTimeId }
+                    { "innerElem._id": prevTimeId },
+                    { "availElem.from": { $in: [prevTimeSelected] } }
                 ],
                 new: true
             }
         );
 
+
+        console.log(updateStatus);
         res.status(200).json(currentDoctor)
 
     } catch (error) {
@@ -534,7 +548,7 @@ export const makeReview = async (req, res) => {
 export const getReviews = async (req, res) => {
     console.log("we reached hetre ayahoo :" + req.params.id);
     try {
-        const response = await ReviewModel.find({ doctorListId:req.params.id  }).populate("patient")
+        const response = await ReviewModel.find({ doctorListId: req.params.id }).populate("patient")
         res.status(200).json(response)
     } catch (error) {
         console.log();
