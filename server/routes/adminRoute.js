@@ -1,5 +1,7 @@
 import express from 'express';
 import { admin_login,getAllLcense,
+    userAnalytics,
+    profitAnalystics,
     verifyApplicationDoctor,sendInvoice,deleteLicense,addLicenses,getAllUsers,singleUser,pendingDoctorRequest,singlePedingDoctor,deleteUser,blockUser,unBlock} from '../controller/adminController.js';
 import { verifyAdmin, verifyDoctor, verifyToken, verifyUser } from '../utils/verifyToken.js';
 
@@ -18,7 +20,9 @@ router.post('/unblock_user',verifyAdmin,unBlock)
 router.delete("/delete_user/:userId",verifyAdmin,deleteUser)
 router.post('/add_licenses',verifyAdmin,addLicenses)
 router.post('/delete_license',verifyAdmin,deleteLicense)
-router.get('/get_allLicenses',verifyAdmin,getAllLcense)
+router.get('/get_allLicenses',verifyAdmin,getAllLcense);
+router.get('/getUser_analytics',userAnalytics)
+router.get('/getDoctors_Profilts',profitAnalystics)
 
 router.post('/verifyApplicationDoctor',verifyApplicationDoctor)
 

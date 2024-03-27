@@ -21,7 +21,6 @@ export const SignUp = async (req, res, next) => {
     let subject = "e-care"
     let message;
 
-
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -64,13 +63,12 @@ export const verifyEmail = async (req, res, next) => {
     try {
         const CheckUser = await Otp.findOne({ email })
         if (!CheckUser) return next(createError(401, "user not Found"));
-        const isMatch = await bcrypt.compare(otp.toString(), CheckUser.otp)
+        const isMatch = await bcrypt.compare(otp.toString(), CheckUser.otp);
         if (isMatch) {
             const newUser = new User({
                 username: CheckUser.username,
                 email: CheckUser.email,
                 password: CheckUser.password,
-
             })
 
             const token = jwt.sign({ id: newUser._id, role: newUser.role, isAdmin: newUser.isAdmin, isDoctor: newUser.isDoctor },
@@ -573,8 +571,19 @@ export const updateReview = async (req, res) => {
 export const myAppointments = async (req, res) => {
     try {
         const response = await Appointment.find({ patient: req.params.id }).populate('doctor');
+        console.log(response);
+        res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const singleAppointment = async (req,res)=>{
+    try {
+        const response = await Appointment.findById(req.params.id).populate('doctor')
         res.status(200).json(response)
     } catch (error) {
         console.log(error);
+        
     }
 }

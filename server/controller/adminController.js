@@ -245,22 +245,96 @@ export const verifyApplicationDoctor = async (req, res, next) => {
 
 
         //adding doctor in approved schema
-            const newApprovedSchema = new ApprovedDoctorModel({
-                user: userId,
-                firstname: current.firstname,
-                lastname: current.lastname,
-                email: current.email,
-                speciality: current.speciality,
-                phoneNo: current.phoneNo,
-                qualification: current.qualification,
-                profileImage: current.profileImage,
-                licenseNo:"MA3312"
-            })
+        const newApprovedSchema = new ApprovedDoctorModel({
+            user: userId,
+            firstname: current.firstname,
+            lastname: current.lastname,
+            email: current.email,
+            speciality: current.speciality,
+            phoneNo: current.phoneNo,
+            qualification: current.qualification,
+            profileImage: current.profileImage,
+            licenseNo: "MA3312"
+        })
 
-            await newApprovedSchema.save()
+        await newApprovedSchema.save()
 
         return res.status(200).json("successfully done")
     } catch (error) {
         next(createError(400, error))
+    }
+}
+
+export const userAnalytics = async (req, res) => {
+    try {
+        const date = new Date();
+        const lastMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const previousMonth = new Date(lastMonth);
+        previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+        const data = await User.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: previousMonth
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: "$_id",
+                    count: 1
+                }
+            }
+        ]);
+
+        return res.status(200).json(data);
+    } catch (error) {
+        console.error("Error in userAnalytics:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+export const profitAnalystics = async (req, res) => {
+    try {
+        const date = new Date();
+        const lastMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const previousMonth = new Date(lastMonth);
+        previousMonth.setMonth(previousMonth.getMonth() - 1);
+        const data = await ApprovedDoctorModel.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: previousMonth
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 },
+                    amount: { $sum: 20000 }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: "$_id",
+                    count: 1,
+                    amount:1
+                }
+            }
+        ]);
+        return res.status(200).json(data)
+    } catch (error) {
+        console.log(error);
     }
 }

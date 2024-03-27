@@ -52,7 +52,8 @@ const appointmentSchema = new mongoose.Schema({
     },
     bookedId: String,
     doctorListId:String,
-    timeSelected:String
+    timeSelected:String,
+    prescription:String
     
    
 }, {

@@ -132,7 +132,7 @@ const generateTimeIntervals = (startTime, endTime) => {
                 let from = `${hour < 10 ? '0' : ''}${hour}:${currentMinute < 10 ? '0' : ''}${currentMinute}`;
                 intervals.push({
                     from,
-                    status:""
+                    status: ""
                 });
             }
         }
@@ -179,9 +179,9 @@ export const pendingAppointment = async (req, res) => {
 }
 
 export const approveAppointment = async (req, res, next) => {
-    const { apppointmentId } = req.body
+    const { apppointmentId, presciptionLink } = req.body
     try {
-        const response = await Appointment.findOneAndUpdate({ _id: apppointmentId }, { $set: { status: "completed" } }, { new: true });
+        const response = await Appointment.findOneAndUpdate({ _id: apppointmentId }, { $set: { status: "completed", prescription: presciptionLink } }, { new: true });
         return res.status(200).json(response)
     } catch (error) {
         next(createError(400, error))

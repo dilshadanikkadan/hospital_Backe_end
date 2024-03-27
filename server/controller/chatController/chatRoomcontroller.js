@@ -1,6 +1,7 @@
 import ChatRoom from '../../models/socket/chatRoomModel.js'
 import MessageModel from '../../models/socket//messageModel.js'
 import mongoose from 'mongoose'
+import Appointment from '../../models/AppointmentModel.js'
 export const createRoom = async (req, res) => {
 
     const { senderId, reciverId } = req.body
@@ -48,7 +49,7 @@ export const createMessage = async (req, res) => {
         }
 
         const update = await ChatRoom.findByIdAndUpdate(chatRoom, { $push: { lastMessage: { text: lastMessageText, time: Date.now(), sender: sender } } }, { new: true });
-        const updateSecond = await ChatRoom.findByIdAndUpdate(chatRoom, { $set:  { messageLast : { text: lastMessageText, time: Date.now(), sender: sender } }}, { new: true })
+        const updateSecond = await ChatRoom.findByIdAndUpdate(chatRoom, { $set: { messageLast: { text: lastMessageText, time: Date.now(), sender: sender } } }, { new: true })
 
         res.status(200).json(response)
     } catch (error) {
@@ -104,7 +105,7 @@ export const readMessage = async (req, res) => {
 
         const updateObject = {
             $set: {
-          
+
                 lastMessage: []
             }
         };
@@ -113,5 +114,15 @@ export const readMessage = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+    }
+}
+
+
+export const deleteChat = async (req, res) => {
+    try {
+        const chatDelete = await ChatRoom.findByIdAndDelete(req.params.id);
+        return res.status(200).json("deleted chat successfully")
+    } catch (error) {
+
     }
 }
