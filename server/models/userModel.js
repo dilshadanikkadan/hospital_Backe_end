@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema({
    profilePicture: {
       type: String,
       default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+   },
+   accountBalance: {
+      type:Number,
+      default:0
    }
 
 }, { timestamps: true });

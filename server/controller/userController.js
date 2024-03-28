@@ -293,8 +293,9 @@ export const makePaymentDcotorValidate = async (req, res, next) => {
         if (digest !== razorpay_signature) {
             return res.status(400).json("not valid your payment");
         }
-        const updateSatatus = await InvoiceSchema.updateOne({ recieverId: userId }, { $set: { status: "success" } }, { new: true })
-        const updatStatus = await DoctorApplication.updateOne({ user: userId }, { $set: { status: "suscess" } }, { new: true })
+        const updateSatatus = await InvoiceSchema.updateOne({ recieverId: userId }, { $set: { status: "success" } }, { new: true });
+        const updatStatus = await DoctorApplication.updateOne({ user: userId }, { $set: { status: "suscess" } }, { new: true });
+        const accountBalanceUpdate = await User.findOneAndUpdate({ isAdmin: true }, { $inc: { accountBalance: 20000 } })
         return res.status(200).json({
             msg: "payment successfully completed",
             paymentId: razorpay_payment_id,
@@ -439,11 +440,13 @@ export const validatePatientPayment = async (req, res) => {
         if (digest !== razorpay_signature) {
             return res.status(400).json("not valid your payment");
         }
+        const accountBalanceUpdate = await User.findOneAndUpdate({ isAdmin: true }, { $inc: { accountBalance: 799 } })
         return res.status(200).json({
             msg: "payment successfully completed",
             paymentId: razorpay_payment_id,
             orderId: razorpay_order_id
         });
+
     } catch (error) {
         console.log(error);
     }
@@ -451,7 +454,7 @@ export const validatePatientPayment = async (req, res) => {
 
 
 export const reScheduleAppointment = async (req, res) => {
-    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time, date, month, timeSelected,prevTimeSelected } = req.body
+    const { appointmentId, prevTimeId, prevBookedId, prevDoctodId, newDoctorId, newBookedId, newTimeId, time, date, month, timeSelected, prevTimeSelected } = req.body
     console.log("date is here", date);
     try {
         const currentDoctor = await ApprovedDoctorModel.findOne({ user: newDoctorId });
@@ -578,12 +581,12 @@ export const myAppointments = async (req, res) => {
     }
 }
 
-export const singleAppointment = async (req,res)=>{
+export const singleAppointment = async (req, res) => {
     try {
         const response = await Appointment.findById(req.params.id).populate('doctor')
         res.status(200).json(response)
     } catch (error) {
         console.log(error);
-        
+
     }
 }

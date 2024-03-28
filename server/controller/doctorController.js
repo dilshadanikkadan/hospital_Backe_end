@@ -179,12 +179,53 @@ export const pendingAppointment = async (req, res) => {
 }
 
 export const approveAppointment = async (req, res, next) => {
-    const { apppointmentId, presciptionLink } = req.body
+    const { apppointmentId, presciptionLink ,myId } = req.body
     try {
         const response = await Appointment.findOneAndUpdate({ _id: apppointmentId }, { $set: { status: "completed", prescription: presciptionLink } }, { new: true });
+        const accountBalanceUpdate = await User.findOneAndUpdate({ isAdmin: true }, { $inc: { accountBalance: -799 } })
+        const Doctor = await User.findByIdAndUpdate(myId, { $inc: { accountBalance: 799 } })
+
         return res.status(200).json(response)
     } catch (error) {
         next(createError(400, error))
         console.log("error");
+    }
+}
+
+
+export const getPatientAnalaystics =async(req,res)=>{
+    try {
+        const date = new Date();
+        const lastMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const previousMonth = new Date(lastMonth);
+        previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+        const data = await Appointment.aggregate([
+            {
+                $match:{
+                    doctorListId:req.params.id,
+                    createdAt:{$gte:previousMonth}
+                }
+            }
+            ,
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 },
+                    amount:{$sum:799}
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: "$_id",
+                    count: 1,
+                    amount:1
+                }
+            }
+        ])
+        res.status(200).json(data)
+    } catch (error) {
+        
     }
 }

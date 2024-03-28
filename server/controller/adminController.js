@@ -11,6 +11,7 @@ import { dataPdf } from '../utils/pdfData.js'
 import cloudinary from "cloudinary"
 import fs from "fs"
 import ApprovedDoctorModel from '../models/Doctor/ApprovedDoctorModel.js'
+import BannerModel from '../models/admin/BannerModel.js'
 //config
 cloudinary.v2.config({
     cloud_name: 'dvqq5x5x6',
@@ -329,11 +330,48 @@ export const profitAnalystics = async (req, res) => {
                     _id: 0,
                     month: "$_id",
                     count: 1,
-                    amount:1
+                    amount: 1
                 }
             }
         ]);
         return res.status(200).json(data)
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export const addBanner = async (req, res) => {
+    const { title, image, type, description } = req.body
+    try {
+        const newBannerSchmea = new BannerModel({
+            title,
+            image,
+            description,
+            type
+        });
+        const saved = await newBannerSchmea.save();
+        res.status(200).json(saved)
+    } catch (error) {
+
+    }
+}
+
+export const updateBanner = async (req, res) => {
+    const { title, image, type, description } = req.body
+    try {
+        const update = await BannerModel.findOneAndUpdate(req.params.id, { $set: { ...req.body } }, { new: true })
+        res.status(200).json(update)
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getBanner = async (req, res) => {
+    try {
+        const response = await BannerModel.find();
+
+        res.status(200).json(response)
     } catch (error) {
         console.log(error);
     }
