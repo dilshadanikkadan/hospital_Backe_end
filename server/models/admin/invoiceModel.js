@@ -1,6 +1,5 @@
 import mongoose, { mongo } from "mongoose";
 
-
 const invoiceSchema = mongoose.Schema({
     recieverId: {
         type: mongoose.Schema.Types.ObjectId,

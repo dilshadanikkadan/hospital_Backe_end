@@ -6,6 +6,8 @@ import {
     addBanner,
     updateBanner,
     getBanner,
+    addSpecialities,
+    getSpecialities,
     verifyApplicationDoctor, sendInvoice, deleteLicense, addLicenses, getAllUsers, singleUser, pendingDoctorRequest, singlePedingDoctor, deleteUser, blockUser, unBlock
 } from '../controller/adminController.js';
 import { verifyAdmin, verifyDoctor, verifyToken, verifyUser } from '../utils/verifyToken.js';
@@ -33,7 +35,8 @@ router.post('/verifyApplicationDoctor', verifyApplicationDoctor);
 router.post('/add_banner', addBanner)
 router.post('/update_banner', updateBanner)
 router.get('/get_banners', getBanner)
-
+router.get('/get_specialities', getSpecialities)
+router.post('/add_specialities',addSpecialities)
 // sednign invoice to admin
 router.post('/send_invoice', sendInvoice)
 

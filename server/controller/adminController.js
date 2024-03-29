@@ -12,6 +12,7 @@ import cloudinary from "cloudinary"
 import fs from "fs"
 import ApprovedDoctorModel from '../models/Doctor/ApprovedDoctorModel.js'
 import BannerModel from '../models/admin/BannerModel.js'
+import SpecialityModel from '../models/admin/specialityModel.js'
 //config
 cloudinary.v2.config({
     cloud_name: 'dvqq5x5x6',
@@ -357,10 +358,13 @@ export const addBanner = async (req, res) => {
     }
 }
 
-export const updateBanner = async (req, res) => {
+export const updateBanner = async (req, res, next) => {
     const { title, image, type, description } = req.body
+    if (!title || !image || !type || !description) {
+        next(createError(400, "Missing required fields."))
+    }
     try {
-        const update = await BannerModel.findOneAndUpdate(req.params.id, { $set: { ...req.body } }, { new: true })
+        const update = await BannerModel.findOneAndUpdate({ type: type }, { $set: { ...req.body } }, { new: true })
         res.status(200).json(update)
     } catch (error) {
         console.log(error);
@@ -370,6 +374,34 @@ export const updateBanner = async (req, res) => {
 export const getBanner = async (req, res) => {
     try {
         const response = await BannerModel.find();
+
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export const addSpecialities = async (req, res) => {
+    const { title, image, description } = req.body
+    try {
+        const newSpecialitySchmea = new SpecialityModel({
+            title,
+            image,
+            description,
+
+        });
+        const saved = await newSpecialitySchmea.save();
+        res.status(200).json(saved)
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+export const getSpecialities = async (req, res) => {
+    try {
+        const response = await SpecialityModel.find();
 
         res.status(200).json(response)
     } catch (error) {
