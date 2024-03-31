@@ -2,7 +2,7 @@ import User from '../models/userModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { createError } from '../utils/error.js'
-import { sendAutoEmailDoctor, sendOtp, sendOtpForgot } from '../services/sendOtp.js'
+import { contactEmailSend, sendAutoEmailDoctor, sendOtp, sendOtpForgot } from '../services/sendOtp.js'
 import Otp from '../models/otpModel.js'
 import { validationResult } from 'express-validator'
 import DoctorApplication from '../models/doctorApplicationModel.js'
@@ -387,7 +387,7 @@ export const viewAppointment = async (req, res) => {
 
 
 export const cancelAppointment = async (req, res) => {
-    const { appointmentId, timeId, doctorListId, bookedId, timeSelected } = req.body
+    const { appointmentId, timeId, doctorListId, bookedId, timeSelected,myId } = req.body
     try {
         const response = await Appointment.findByIdAndDelete(appointmentId);
         const updateStatus = await ApprovedDoctorModel.updateOne(
@@ -411,7 +411,10 @@ export const cancelAppointment = async (req, res) => {
                 new: true
             }
         );
-
+        console.log("my id ",myId);
+        const accountBalanceUpdate = await User.findOneAndUpdate({ isAdmin: true }, { $inc: { accountBalance: -799 } })
+        const updateWallet = await User.findOneAndUpdate({ _id: myId }, { $inc: { accountBalance: 799 } })
+console.log(updateWallet);
         return res.status(200).json("deleted sucess fully")
     } catch (error) {
         console.log(error);
@@ -467,8 +470,7 @@ export const reScheduleAppointment = async (req, res) => {
             timeSelected,
             month
         };
-        // console.log(req.body);
-        // console.log(updateFields);
+
 
 
         const updateStatus = await ApprovedDoctorModel.updateOne(
@@ -587,6 +589,21 @@ export const singleAppointment = async (req, res) => {
         res.status(200).json(response)
     } catch (error) {
         console.log(error);
+
+    }
+}
+
+
+export const contactUs = async (req, res) => {
+    const { email, subject, message } = req.body
+    try {
+        contactEmailSend({
+            email,
+            subject,
+            message
+        });
+        res.status(200).json("send success  ")
+    } catch (error) {
 
     }
 }

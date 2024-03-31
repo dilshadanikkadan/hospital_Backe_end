@@ -8,6 +8,7 @@ import {
     getBanner,
     addSpecialities,
     getSpecialities,
+    deleteSpecialities,
     verifyApplicationDoctor, sendInvoice, deleteLicense, addLicenses, getAllUsers, singleUser, pendingDoctorRequest, singlePedingDoctor, deleteUser, blockUser, unBlock
 } from '../controller/adminController.js';
 import { verifyAdmin, verifyDoctor, verifyToken, verifyUser } from '../utils/verifyToken.js';
@@ -18,7 +19,7 @@ const router = express.Router();
 
 
 router.post("/admin_login", admin_login)
-router.get("/get_users", verifyAdmin, getAllUsers)
+router.get("/get_users", getAllUsers)
 router.get("/get_pendingDoctorRequest", verifyAdmin, pendingDoctorRequest)
 router.get("/get_singlePedingDoctor/:doctorId", singlePedingDoctor)
 router.get("/single_user/:userId", singleUser)
@@ -36,6 +37,7 @@ router.post('/add_banner', addBanner)
 router.post('/update_banner', updateBanner)
 router.get('/get_banners', getBanner)
 router.get('/get_specialities', getSpecialities)
+router.delete('/delete_specialities/:id', deleteSpecialities)
 router.post('/add_specialities',addSpecialities)
 // sednign invoice to admin
 router.post('/send_invoice', sendInvoice)

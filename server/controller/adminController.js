@@ -360,9 +360,7 @@ export const addBanner = async (req, res) => {
 
 export const updateBanner = async (req, res, next) => {
     const { title, image, type, description } = req.body
-    if (!title || !image || !type || !description) {
-        next(createError(400, "Missing required fields."))
-    }
+ 
     try {
         const update = await BannerModel.findOneAndUpdate({ type: type }, { $set: { ...req.body } }, { new: true })
         res.status(200).json(update)
@@ -404,6 +402,17 @@ export const getSpecialities = async (req, res) => {
         const response = await SpecialityModel.find();
 
         res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const deleteSpecialities = async (req, res) => {
+    console.log("reached api",req.params.id);
+
+    try {
+        const response = await SpecialityModel.findByIdAndDelete(req.params.id);
+        return res.status(200).json("deleted success fully")
     } catch (error) {
         console.log(error);
     }

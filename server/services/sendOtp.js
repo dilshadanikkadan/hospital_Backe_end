@@ -50,7 +50,7 @@ export const sendOtp = async ({ username, password, email, subject, message, dur
             otp: hashedOtp,
             createdAt: Date.now(),
             expirest: Date.now() + 50000
-        }) 
+        })
         await newOtp.save()
 
 
@@ -70,7 +70,7 @@ export const sendOtp = async ({ username, password, email, subject, message, dur
 
 
 export const sendOtpForgot = async ({ username, password, email, subject, message, duration = 30 }) => {
-    if (!(email && subject  && message)) {
+    if (!(email && subject && message)) {
         createError(401, "invalid credential")
     }
     try {
@@ -102,7 +102,7 @@ export const sendOtpForgot = async ({ username, password, email, subject, messag
             otp: hashedOtp,
             createdAt: Date.now(),
             expirest: Date.now() + 50000
-        }) 
+        })
         await newOtp.save()
 
 
@@ -116,26 +116,23 @@ export const sendOtpForgot = async ({ username, password, email, subject, messag
     } catch (error) {
         throw error
 
-    } 
+    }
 
 }
 
-export const sendAutoEmailDoctor = async ({ email ,subject,message ,name}) => {
-    if (!(email && subject  && message)) {
+export const sendAutoEmailDoctor = async ({ email, subject, message, name }) => {
+    if (!(email && subject && message)) {
         createError(401, "invalid credential")
     }
     try {
-
-
-   
 
         const mailOptions = {
             from: process.env.AUTH_EMAIL,
             to: email,
             subject,
-            html: 
+            html:
 
-            `
+                `
             <div style="max-width: 600px; margin: 0 auto; padding: 40px; background-color: #ffffff;">
             <h3 style="color: #333; margin-bottom: 20px;">Thank You for Your Application ${name} </h3>
             <p style="font-size: 16px; line-height: 24px; color: #333;">This is an auto-generated email to acknowledge receipt of your application. We appreciate your interest in our service. Rest assured, we will review your application carefully. We will be in touch with you soon to discuss the next steps.</p>
@@ -144,14 +141,41 @@ export const sendAutoEmailDoctor = async ({ email ,subject,message ,name}) => {
             `
         }
         await sendEmail(mailOptions)
-     
 
 
-        return {success:true}
+
+        return { success: true }
 
     } catch (error) {
         throw error
 
-    } 
+    }
 
+}
+
+export const contactEmailSend = async ({ email, subject, message }) => {
+    if (!(email && subject && message)) {
+        createError(401, "invalid credential")
+    }
+    try {
+        const mailOptions = {
+            from: email,
+            to: process.env.AUTH_EMAIL,
+            subject,
+            html: `
+            <div style="max-width: 600px; margin: 0 auto; padding: 40px; background-color: #ffffff;">
+                <h3 style="color: #333; margin-bottom: 20px;">New Contact Form Submission</h3>
+                <p style="font-size: 16px; line-height: 24px; color: #333;"><strong>Email:</strong> ${email}</p>
+                <p style="font-size: 16px; line-height: 24px; color: #333;"><strong>Subject:</strong> ${subject}</p>
+                <p style="font-size: 16px; line-height: 24px; color: #333;"><strong>Message:</strong><br>${message}</p>
+            </div>
+        `
+
+        };
+
+        await sendEmail(mailOptions)
+        return { success: true }
+    } catch (error) {
+        console.log(error);
+    }
 }

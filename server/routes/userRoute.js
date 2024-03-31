@@ -1,5 +1,5 @@
 import express from 'express';
-import { SignUp, singleAppointment,myAppointments,viewSingleDoctor, updateReview,getReviews,makeReview,reScheduleAppointment,validatePatientPayment,cancelAppointment,viewAppointment,bookAppointment,getAllDoctor,verifyEmail, makePaymentDcotorValidate,makePaymentDcotor,allNotification,chekLicenseIsValid,forgot_password, login, resetPassword, logout ,checkApplied,verifyForgotOtp,applyDoctorApplication} from '../controller/userController.js';
+import { SignUp,contactUs, singleAppointment,myAppointments,viewSingleDoctor, updateReview,getReviews,makeReview,reScheduleAppointment,validatePatientPayment,cancelAppointment,viewAppointment,bookAppointment,getAllDoctor,verifyEmail, makePaymentDcotorValidate,makePaymentDcotor,allNotification,chekLicenseIsValid,forgot_password, login, resetPassword, logout ,checkApplied,verifyForgotOtp,applyDoctorApplication} from '../controller/userController.js';
 import { verifyAdmin,verifyDoctor, verifyToken, verifyUser } from '../utils/verifyToken.js';
 import { SuccessMsg } from '../utils/sucess.js';
 import { validateSignup } from '../middlewires/signUpvalidate.js';
@@ -36,7 +36,7 @@ router.post('/update_review',updateReview)
 router.get('/get_review/:id',getReviews);
 router.get('/my_appointments/:id',myAppointments)
 router.get('/single_appointments/:id',singleAppointment)
-
+router.post('/contactUs',contactUs)
 
 
 router.get("/check",  (req, res, next) => {
