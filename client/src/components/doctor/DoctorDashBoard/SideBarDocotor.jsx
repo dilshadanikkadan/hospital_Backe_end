@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PeopleOutlineOutlinedIcon from '@mui/icons-material/PeopleOutlineOutlined';
@@ -16,12 +16,14 @@ import { useMutation } from '@tanstack/react-query';
 import { logoutDoctor } from '../../../store/redux/slices/DoctorSlice';
 import { useDispatch } from 'react-redux';
 import { userLogout } from '../../../services/api/userRoute';
-
-
+import MedicationIcon from '@mui/icons-material/Medication';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 const SideBarDocotor = () => {
-
-
+    const [hidden, setHidden] = useState(100)
+    const [isOpen, setIsOpen] = useState(false)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -38,7 +40,15 @@ const SideBarDocotor = () => {
     }
     return (
         <>
-            <div className="sidenav h-[100vh] w-[20%] flex ">
+            <MenuIcon className='relative top-3 left-4 md:opacity-0' onClick={() => {
+                setHidden(0)
+                setIsOpen(true)
+            }} />
+            <div className={`sidenav translate-x-[-${hidden}vw] transition-all bg-white duration-700 z-50 h-[100vh] w-[60%] md:w-[20%] flex fixed md:relative`}>
+                <CloseIcon className='absolute top-3 right-4 md:opacity-0' onClick={() => {
+                    setHidden(200)
+                    setIsOpen(false)
+                }} />
                 <div className="itemsContainer w-[80%] h-[80%]  m-auto mt-[15%]  flex flex-col gap-5 font-info">
                     <p>Doctor</p>
 
@@ -47,43 +57,48 @@ const SideBarDocotor = () => {
 
                         <NavLink to="/doctor" className={({ isActive }) => isActive ? "active  flex items-center gap-3 100" : 'flex items-center gap-3'} >
                             <HomeOutlinedIcon />
-                            <p>Dashbord</p>
+                            <p >Dashbord</p>
                         </NavLink>
 
                         <NavLink to="/doctor/patients" className={({ isActive }) => isActive ? "active  flex items-center gap-3 bg-slate-100 py-1 pl-1 rounded-md" : 'flex items-center gap-3'} >
                             <QueryBuilderIcon />
-                            <p>Appointment</p>
+                            <p >Appointment</p>
                         </NavLink>
 
-                        <NavLink to="/doctor/pending_doctorRequests" className={({ isActive }) => isActive ? "active  flex items-center gap-3 bg-slate-100" : 'flex items-center gap-3'} >
+                        <NavLink to="/doctor/patientHistory" className={({ isActive }) => isActive ? "active  flex items-center gap-3 bg-slate-100 py-1 pl-1 rounded-md" : 'flex items-center gap-3'} >
                             <PersonAddAltOutlinedIcon />
-                            <p>Patients</p>
+                            <p >Patients</p>
                         </NavLink>
 
 
 
-                        <NavLink to="/notifications" className={({ isActive }) => isActive ? "active" : 'flex items-center gap-3'} >
+                        {/* <NavLink to="/notifications" className={({ isActive }) => isActive ? "active" : 'flex items-center gap-3'} >
                             <NotificationsNoneOutlinedIcon />
                             <p>Reminder</p>
-                        </NavLink>
+                        </NavLink> */}
                         <NavLink to="/doctor/chat" className={({ isActive }) => isActive ? "active  flex items-center gap-3 bg-slate-100 py-1 pl-1 rounded-md" : 'flex items-center gap-3'} >
                             <ForumIcon />
-                            <p>Chats</p>
+                            <p > Chats</p>
                         </NavLink>
 
                         <NavLink to="/doctor/setdates" className={({ isActive }) => isActive ? "active  flex items-center gap-3 bg-slate-100 py-1 pl-1 rounded-md" : 'flex items-center gap-3'} >
                             <CalendarMonthIcon />
-                            <p>set Dates</p>
+                            <p > set Dates</p>
                         </NavLink>
 
-                        <NavLink to="/payment" className={({ isActive }) => isActive ? "active" : 'flex items-center gap-3'} >
-                            <PaymentOutlinedIcon />
-                            <p>Payment</p>
+                        <NavLink to="/doctor/prescription" className={({ isActive }) => isActive ? "active  flex items-center gap-3 bg-slate-100 py-1 pl-1 rounded-md" : 'flex items-center gap-3'} >
+                            <MedicationIcon />
+                            <p > set Priscription</p>
                         </NavLink>
+                        <NavLink to="/doctor/analystics" className={({ isActive }) => isActive ? "active flex items-center gap-3 bg-slate-100 py-1 pl-1 rounded-md" : 'flex items-center gap-3'} >
+                            <BarChartIcon />
+                            <p>Analaystics</p>
+                        </NavLink>
+                    
                     </div>
                     <div to="/logout" className='flex items-center gap-3 cursor-pointer' onClick={handleLogout} >
-                        <LogoutOutlinedIcon  />
-                        <p>Logout</p>
+                        <LogoutOutlinedIcon />
+                        <p className='hidden md:block'>Logout</p>
                     </div>
                 </div>
             </div>

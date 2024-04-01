@@ -8,9 +8,9 @@ const Dashboard = () => {
     <div className=' flex w-full'>
 
       <SideBarDocotor />
-      <div className="div w-[80%] ">
+      <div className="div w-[80%]    rounded-md h-[85%] mt-10 pb-4">
         <DashBoardBoxDoctor />
-        <TodaysAppointment/>
+        <TodaysAppointment />
       </div>
     </div>
   )

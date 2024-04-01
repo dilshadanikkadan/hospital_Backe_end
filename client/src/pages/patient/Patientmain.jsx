@@ -36,6 +36,12 @@ import VerifiedPage from './VerifiedPage'
 import ResheduleAppointmentPage from './ResheduleAppointmentPage'
 import ChatPatientPage from './ChatPatientPage'
 import ChatWithPatients from '../doctor/ChatWithPatients'
+import VideoChatPage from '../doctor/VideoChatPage'
+import { CallStateRoute } from '../../store/others/CallState'
+import AppointmentHistoryPage from './AppointmentHistoryPage'
+import AppointmentHistorySingleView from './AppointmentHistorySingleView'
+import Error from '../../components/common/Error'
+import ContactPage from './ContactPage'
 const Patientmain = () => {
 
   const router = createBrowserRouter([
@@ -43,10 +49,11 @@ const Patientmain = () => {
       path: '/',
       element:
         <BlockeduserCheck>
-
-          <Home />
+          <CallStateRoute>
+            <Home />
+          </CallStateRoute>
         </BlockeduserCheck>,
-      errorElement: <div>404  not hey</div>
+      errorElement: <Error/>
 
     },
     {
@@ -57,21 +64,30 @@ const Patientmain = () => {
       path: '/about',
       element:
         <BlockeduserCheck>
-          <About />
+          <CallStateRoute>
+
+            <About />
+          </CallStateRoute>
         </BlockeduserCheck>
     },
     {
       path: '/Ourdoctors',
       element:
         <BlockeduserCheck>
-          <DoctorsPage />
+          <CallStateRoute>
+
+            <DoctorsPage />
+          </CallStateRoute>
         </BlockeduserCheck>
     },
     {
       path: '/service',
       element:
         <BlockeduserCheck>
-          <Service />
+          <CallStateRoute>
+
+            <Service />
+          </CallStateRoute>
         </BlockeduserCheck>
     },
     {
@@ -85,12 +101,17 @@ const Patientmain = () => {
     {
       path: "/about/allDoctors/:id",
       element:
-        <SingleDoctorView />
+        <CallStateRoute>
+
+          <SingleDoctorView />
+        </CallStateRoute>
     },
     {
       path: "/allDoctors/:id",
       element:
-        <SingleDoctorView />
+        <CallStateRoute>
+          <SingleDoctorView />
+        </CallStateRoute>
     },
     {
       path: "/makeAppointment",
@@ -137,9 +158,27 @@ const Patientmain = () => {
         <ViewAppointment />
     },
     {
+      path: "/appointmentHistory",
+      element:
+        <AppointmentHistoryPage />
+    },
+    {
+      path: "/appointmentHistory/:id",
+      element:
+        <AppointmentHistorySingleView />
+    },
+    {
       path: "/chat_doctors",
       element:
-        <ChatWithPatients />
+        <CallStateRoute>
+
+          <ChatWithPatients />
+        </CallStateRoute>
+    },
+    {
+      path: "/chat_doctors/videoCall",
+      element:
+        <VideoChatPage />
     },
     {
       path: "service/application_1",
@@ -224,27 +263,30 @@ const Patientmain = () => {
       path: '/notification',
       element:
         <BlockeduserCheck>
-
           <Notification />
         </BlockeduserCheck>
+    },
+    {
+      path: '/error',
+      element:
+          <Error />
     },
     {
       path: '/notification/:id',
       element:
         <BlockeduserCheck>
-
           <SingleNotification />
         </BlockeduserCheck>
     },
     {
       path: '/contact',
-      element: <div>coming soon</div>
+      element:
+      <ContactPage/>
     }
   ])
   return (
     <div>
       <AnimatePresence onExitComplete>
-
         <RouterProvider key={window.location.pathname} router={router} />
       </AnimatePresence>
 

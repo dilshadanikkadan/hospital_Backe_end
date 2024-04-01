@@ -4,7 +4,7 @@ import { useFormik, Form, Formik, Field } from "formik"
 import { AppointMentOneValidation } from '../../../services/validation/AppointmentValidationOne'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { makeAppointment, makePayment, validatePatientPayment } from '../../../services/api/userRoute'
+import { creatChatRoom, makeAppointment, makePayment, validatePatientPayment } from '../../../services/api/userRoute'
 
 
 const initialValues = {
@@ -18,7 +18,7 @@ const AppointmentOneBox = () => {
     const navigate = useNavigate()
     const [credentials, setCredentials] = useState({})
     const { state } = useLocation()
-
+    console.log(state);
     const { mutate: makePaymentMutate } = useMutation({
         mutationFn: makePayment,
         onSuccess: (data) => {
@@ -28,11 +28,24 @@ const AppointmentOneBox = () => {
         }
     })
 
+    const { mutate: createRoomMutate } = useMutation({
+        mutationFn: creatChatRoom,
+        onSuccess: (data) => {
+            if (data) {
+                console.log("chat also created ");
+            }
+        }
+    })
+
     const { mutate: makeAppointmentMutate } = useMutation({
         mutationFn: makeAppointment,
         onSuccess: (data) => {
             if (data.success) {
                 console.log("all are done");
+                createRoomMutate({
+                    senderId: state.doctorListId,
+                    reciverId: state.patient
+                })
                 navigate("/makeAppointment/_2/sucess", { replace: true })
             }
         }
@@ -55,6 +68,7 @@ const AppointmentOneBox = () => {
     })
 
     const handlePaymentAppointment = () => {
+
         makePaymentMutate({
             amount: 799 * 100,
             currency: "INR",
@@ -168,7 +182,7 @@ const AppointmentOneBox = () => {
                         }
 
                         <label className="border-[1px] border-gray-200 rounded-lg flex items-center gap-2 mt-5">
-                            <Field as="textarea" className="grow" placeholder="Reason For Your Appointment" name='reason'
+                            <Field as="textarea" className="grow pl-2 pt-3" placeholder="Reason For Your Appointment" name='reason'
 
                             />
                         </label>

@@ -8,6 +8,10 @@ import SetdatesPage from './SetdatesPage'
 import PendingAppointment from './PendingAppointment'
 import ViewPendingAppointment from './ViewPendingAppointment'
 import ChatWithPatients from './ChatWithPatients'
+import VideoChatPage from './VideoChatPage'
+import PrescriptionPage from './PrescriptionPage'
+import CompletedPatientsPage from './CompletedPatientsPage'
+import PatientsAnalysticsPage from './PatientsAnalysticsPage'
 
 const Doctormain = () => {
   const router = createBrowserRouter([
@@ -27,6 +31,13 @@ const Doctormain = () => {
      
     },
     {
+      path: '/doctor/prescription',
+      element:
+      <PrescriptionPage/>
+
+     
+    },
+    {
       path: '/doctor/patients',
       element:
       <PendingAppointment/>
@@ -34,9 +45,30 @@ const Doctormain = () => {
      
     },
     {
+      path: '/doctor/patientHistory',
+      element:
+      <CompletedPatientsPage/>
+
+     
+    },
+    {
       path: '/doctor/chat',
       element:
       <ChatWithPatients/>
+
+     
+    },
+    {
+      path: '/doctor/analystics',
+      element:
+      <PatientsAnalysticsPage/>
+
+     
+    },
+    {
+      path: '/doctor/chat/videoCall',
+      element:
+      <VideoChatPage/>
 
      
     },

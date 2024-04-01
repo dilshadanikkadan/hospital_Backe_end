@@ -13,6 +13,7 @@ import crypto from "crypto"
 import ApprovedDoctorModel from '../models/Doctor/ApprovedDoctorModel.js'
 import Appointment from '../models/AppointmentModel.js'
 import ReviewModel from '../models/socket/ReviewModel.js'
+import { approveAppointment } from './doctorController.js'
 
 
 //register
@@ -184,6 +185,11 @@ export const chekLicenseIsValid = async (req, res, next) => {
     try {
         //cheking this is valid licenseNO or not
         const response = await LicenseShema.findById(id, { licenses: { $elemMatch: { $in: [licenseNo, "dummy"] } } });
+        const  check = await DoctorApplication.find({licenseNo:licenseNo})
+        if(check.length >0 ){
+            console.log(check);
+            return next(createError(400, "already exist   Licence N0"))
+        }
         if (response.licenses.length === 0) return next(createError(400, "This Is Not Valid Licence NO"))
         return res.status(200).json("this is valid numner")
     } catch (error) {

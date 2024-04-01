@@ -4,7 +4,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState={
     docotor:null,
-    isDoctor:false
+    isDoctor:false,
+    isCalling:false,
+    callerId:""
 }
 
 const DoctorSlice=createSlice({
@@ -18,10 +20,16 @@ const DoctorSlice=createSlice({
         logoutDoctor:(state)=>{
             state.docotor=null
             state.isDoctor=false
+        },
+        CallVideoCall:(state)=>{
+            state.isCalling=true
+        },
+        setCallerId:(state,action)=>{
+            state.callerId=action.payload
         }
     }
 }) 
 
 
-export const {loginDoctor,logoutDoctor} =DoctorSlice.actions
+export const {loginDoctor,logoutDoctor,CallVideoCall,setCallerId} =DoctorSlice.actions
 export default DoctorSlice.reducer;

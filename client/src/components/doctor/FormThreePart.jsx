@@ -87,12 +87,12 @@ const FormThreePart = () => {
     return (
 
         <div>
-            {(isPending && licenseImage && image) ? <LoadingPage/> :
+            {(isPending && licenseImage && image) ? <LoadingPage /> :
 
                 <div>
                     {
                         state ?
-                            <form className="form w-[28%] m-auto mt-10 flex flex-col relative gap-8">
+                            <form className="form w-[80%] md:w-[28%] m-auto mt-10 flex flex-col relative gap-8">
                                 {(isPending && licenseImage && image) ? <p>please wait...</p> : ""}
 
                                 {(!image && !licenseImage && submit) ? <p className='text-red-500 font-info'>Please Upload this two images</p> : ""}
@@ -124,7 +124,7 @@ const FormThreePart = () => {
                                 <div className='border-dashed border-2 border-secondary rounded-2xl h-[40vh] flex flex-col items-center justify-center'>
                                     {!licenseImage ?
 
-                                        <p className='text-secondary font-info '>Upload A profile Photo</p> : ""
+                                        <p className='text-secondary font-info '>Upload Your Licesnce Image</p> : ""
                                     }
                                     {licenseImage && <div>
 

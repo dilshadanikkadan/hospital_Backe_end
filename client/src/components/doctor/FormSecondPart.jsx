@@ -44,7 +44,7 @@ const FormSecondPart = () => {
                         }}
                     >
                         {({ errors, touched }) => (
-                            <Form className="form w-[28%] m-auto mt-10 flex flex-col relative">
+                            <Form className="form w-[60%] md:w-[28%] m-auto mt-10 flex flex-col relative">
                                 <h3 className='text-2xl font-info font-bold '>Apply For your Service </h3>
                                 <div className="mt-4">
                                     <label htmlFor="doctorSelect" className="block text-sm font-medium text-gray-700">
@@ -67,7 +67,7 @@ const FormSecondPart = () => {
 
 
                                 <label className="border-[1px] border-gray-200 rounded-lg flex items-center gap-2 mt-5">
-                                    <Field as="textarea" className="grow   " placeholder="Qualification" name='qualification'
+                                    <Field as="textarea" className="grow pt-2  pl-2 " placeholder="Qualification" name='qualification'
 
                                     />
                                 </label>
